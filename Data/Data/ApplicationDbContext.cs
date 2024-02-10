@@ -1,6 +1,8 @@
 ﻿using Demo.SchoolModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+ 
+
 
 namespace Demo.Data
 {
@@ -12,5 +14,6 @@ namespace Demo.Data
         }
         public DbSet<Customer> Customers { get; set; }
 
+ 
     }
 }

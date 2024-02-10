@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Demo.Data;
 using Demo.SchoolModels;
+using Demo.Models;
 
 namespace Demo.Data
 {
@@ -18,6 +19,30 @@ namespace Demo.Data
             {
                 return;   // DB has been seeded
             }
+
+            List<User> appPerson = RandomData.GenerateUsers(100); //.First();
+            List<Customer> cs = new List<Customer>();
+            int count = 1;
+            foreach(User u in appPerson)
+            {
+                Customer c = new Customer();
+                c.FirstName = u.FirstName;
+                c.LastName = u.LastName; 
+                c.Email = u.Email;
+                c.Contact = u.Phone;
+                c.DateOfBirth = u.DateOfBirth;
+               // c.Id = count;
+                cs.Add(c);
+                count++;
+               // context.Customers.Add(c);
+               // context.SaveChanges();
+            }
+
+            context.Customers.AddRange(cs);
+            context.SaveChanges();
+
+            var ctb = cs.Count();
+             
 
             var students = new Student[]
             {

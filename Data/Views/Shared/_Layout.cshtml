@@ -103,7 +103,7 @@
                             @*<li><a class="dropdown-item" href="#"> Cluster Info </a></li>*@
                             <li>  <a class="nav-link text-dark" asp-area="" asp-controller="kubernetesmenu" asp-action="ClusterInfo">Cluster Info</a> </li>
                             <li>
-                                <a class="nav-link text-dark" href="https://github.com/dfrazzitta/Demo" tabindex="-1" aria-disabled="true">Github</a>
+                                <a class="nav-link text-dark" href="https://github.com/dfrazzitta/Data" tabindex="-1" aria-disabled="true">Github</a>
                             </li>
                          </ul>
                     </li>
@@ -121,14 +121,8 @@
                             <li>  <a class="dropdown-item" asp-area="" asp-controller="Departments" asp-action="Index">Department</a> </li>
                             <li>  <a class="dropdown-item" asp-area="" asp-controller="Enrollments" asp-action="Index">Enrollment</a> </li>
                             <li>  <a class="dropdown-item" asp-area="" asp-controller="Instructors" asp-action="Index">Instructor</a> </li>
-
-                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="getStudents">StudentGrid</a> </li>
-                           
-
-                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="getStudentsgrid">grid</a> </li>
-                            
-
-                        </ul>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="getStudentsgrid">Customer Grid</a> </li>
+                         </ul>
                     </li>
  
                     <li class="nav-item dropdown">
@@ -191,9 +185,6 @@
              @RenderBody()
         </main>
     </div>
- 
- 
-
     <footer class="border-top footer text-muted">
         <mini-profiler />
         <div class="container">

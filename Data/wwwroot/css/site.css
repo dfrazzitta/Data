@@ -20,3 +20,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.container {
+    display: table;
+}
+
+.centered {
+    display: table-cell;
+    height: 50px;
+    width: 800px;
+    background: blue;
+    text-align: center;
+    vertical-align: middle;
+}

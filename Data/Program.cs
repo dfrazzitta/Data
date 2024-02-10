@@ -1,6 +1,8 @@
 //using Data.Data;
 
 using Demo.Data;
+using Demo.Models;
+ 
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -75,10 +77,7 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     //app.UseHsts();
 }
-
-
-
-
+ 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -97,6 +96,11 @@ app.Run();
 
 static void CreateDbIfNotExists(IHost host)
 {
+
+   
+
+
+
     // this is a commit
     using IServiceScope scope = host.Services.CreateScope();
     var services = scope.ServiceProvider;

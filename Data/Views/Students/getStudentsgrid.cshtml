@@ -1,10 +1,10 @@
 ﻿
 @{
     ViewData["Title"] = "getStudentsgrid";
-    Layout = null;
+  //  Layout = null;
 }
 
-<h1>getStudentsgrid</h1>
+<h1>Customer Data</h1>
  
  
  @*
@@ -99,6 +99,7 @@
     }
 
     function Delete(id) {
+        debugger;
         if (confirm('Are You Sure to Delete this Employee Record ?')) {
             $.ajax({
                 type: "POST",
@@ -126,8 +127,8 @@
             "ordering": true,
             "paging": true,
             "scrollCollapse": true,
-            "scrollY": '200px',
-            "scrollX": true,
+           // "scrollY": '200px',
+           // "scrollX": true,
             "processing": true,
             "serverSide": true,
             "filter": true,
@@ -143,7 +144,7 @@
             },
             "columnDefs": [{
                // "targets": [0],
-                "visible": true, //false,
+                "visible": true,  
                 "searchable": true
             }],
             "columns": [
@@ -157,7 +158,7 @@
                 {
                     "data": "ID", "render": function (data, type, row, meta) {
                       //  return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
-                        return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
+                        return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='btn btn-danger btn-sm' onclick='EditCustomer()'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:50px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
 
                     },
                     "orderable": true,
