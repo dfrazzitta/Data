@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "Assortment";
+     
+}
+
+<h1>jqGrid</h1>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/5.8.5/css/ui.jqgrid-bootstrap-ui.min.css" integrity="sha512-Le5SZRnS7S4ArmiYClxIKwWLrs9SoHPyh+oQG7zSBbvm0QQosIoKLW6w7etCry7JlH4Zg4Yr54rWcHf9tq741g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/5.8.5/js/jquery.jqGrid.min.js" integrity="sha512-9HBlNp4a1Zupxukgjxqm9n1YQEwLW8yx4po01H2G5xhesrJYLU9iuT3gn1yD/3q0CThNRyYKIzuMQzsz5Cq0gA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+ 
+ 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js" integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY=" crossorigin="anonymous"></script>
+
+ 
+ 
+@*
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/css/ui.jqgrid.min.css" integrity="sha512-xAIWSSbGucVRdutqUD0VLDowcMF/K8W87EbIoa9YUYB4bTyt/zeykyuu9Sjp0TPVdgrgGgBVCBowKv46wY5gDQ==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/plugins/css/ui.multiselect.min.css" integrity="sha512-UuhJihFIXhnP4QEzaNXfLmzY9W3xoeTDATm0buV4wb2qJKoikNn568f0zA5QmrX0sp6VZzqE6fffvsTYU34tGA==" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/jquery.jqgrid.min.js" integrity="sha512-xt9pysburfYgFvYEtlhPDo8qBEPsupsDvWB8+iwspD+oQTvAdDEpA1aIKcH6zuABU528YitH6jtP0cAe5GrwKA==" crossorigin="anonymous"></script>
+*@
+
+
+
+<table id="dataTable"></table>
+<div id="pager"></div>
+
+<script>
+    jQuery("#dataTable").jqGrid({
+        url: '@Url.Action("GetUsers", "student55")',
+        datatype: "json",
+        colNames: ['UserId', 'LastName', 'FirstMidName', 'FullName', 'EnrollmentDate', 'Enrollments'],
+        colModel: [
+            { name: 'UserId', index: 'UserId', width: 100 },
+            { name: 'LastName', index: 'LastName', width: 200 },
+            { name: 'FirstMidName', index: 'FirstMidName', width: 80 },
+            { name: 'FullName', index: 'FullName', width: 80 }
+            ,
+
+            { name: 'EnrollmentDate', index: 'EnrollmentDate', width: 80 },
+            { name: 'Enrollments', index: 'Enrollments', width: 80 }
+        ],
+        rowNum: 10,
+        rowList: [10, 20, 30],
+        pager: '#pager2',
+        sortname: 'id',
+        viewrecords: true,
+        sortorder: "desc",
+        caption: "JSON Example"
+    });
+    jQuery("#list2").jqGrid('navGrid', '#pager2', { edit: false, add: false, del: false });
+ 
+
+</script>
+

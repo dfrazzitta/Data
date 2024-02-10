@@ -1,0 +1,197 @@
+﻿
+@{
+    ViewData["Title"] = "getStudentsgrid";
+    Layout = null;
+}
+
+<h1>getStudentsgrid</h1>
+ 
+ 
+ @*
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.css" rel="stylesheet">
+*@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" asp-append-version="true" />
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.jqueryui.min.css" asp-append-version="true" />
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
+@*
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.js"></script>
+*@
+
+<div class="container">
+    <br />
+    <div style="width:90%; margin:0 auto;">
+        <table id="customerDatatable" class="display table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Date Of Birth</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+ 
+
+<script>
+
+    function EditCustomer(rowid) {
+        alert(rowid);
+    }
+
+    function DeleteCustomer(rowid) {
+        alert(rowid);
+    }
+
+    function PopupForm(url) {
+        var formDiv = $('<div/>');
+        $.get(url)
+            .done(function (response) {
+                formDiv.html(response);
+
+                Popup = formDiv.dialog({
+                    autoOpen: true,
+                    resizable: false,
+                    title: 'Fill Employee Details',
+                    height: 500,
+                    width: 700,
+                    close: function () {
+                        Popup.dialog('destroy').remove();
+                    }
+
+                });
+            });
+    }
+
+    function SubmitForm(form) {
+        $.validator.unobtrusive.parse(form);
+        if ($(form).valid()) {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+
+                    }
+                }
+            });
+        }
+        return false;
+    }
+
+    function Delete(id) {
+        if (confirm('Are You Sure to Delete this Employee Record ?')) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete", "Employee")/' + id,
+                success: function (data) {
+                    if (data.success) {
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+
+                    }
+                }
+
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $("#customerDatatable").DataTable({
+            
+            "info": true,
+            "ordering": true,
+            "paging": true,
+            "scrollCollapse": true,
+            "scrollY": '200px',
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "searching": true,
+            "ajax": {
+                "url": "/students/GetCustomers1",
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": "data"
+            },
+            search: {
+                return: true
+            },
+            "columnDefs": [{
+               // "targets": [0],
+                "visible": true, //false,
+                "searchable": true
+            }],
+            "columns": [
+                { "data": "Id", "name": "Id", "autoWidth": true },
+                { "data": "FirstName", "name": "First Name", "autoWidth": true },
+                { "data": "LastName", "name": "Last Name", "autoWidth": true },
+                { "data": "Contact", "name": "Country", "autoWidth": true },
+                { "data": "Email", "name": "Email", "autoWidth": true },
+                { "data": "DateOfBirth", "name": "Date Of Birth", "autoWidth": true },
+                
+                {
+                    "data": "ID", "render": function (data, type, row, meta) {
+                      //  return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
+                        return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
+
+                    },
+                    "orderable": true,
+                    "searchable": true,
+                    "width": "150px"
+                }   
+                /*
+                {
+                    "render": function (data, type, row, meta) { 
+                       
+                       //
+                       //  return "<a href='#' class='btn btn-danger' onclick=DeleteCustomer('" + row.id + "'); >Delete</a>"; }
+                        return "<button class='btn btn-danger' onclick=EditCustomer('" + row.id + "'); >Edit</button>" +
+                            "<button class='btn btn-danger' onclick=DeleteCustomer('" + row.id + "'); >Delete</button>"
+                            ;
+                    }
+                }   */
+            ]
+        });
+
+
+ 
+
+        $('#column3_search').on('keyup', function () {
+            table
+                .columns(3)
+                .search(this.value)
+                .draw();
+        });
+
+
+ 
+    });
+      
+
+     
+</script>

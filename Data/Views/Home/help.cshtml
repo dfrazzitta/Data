@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "help";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.all.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.min.css" rel="stylesheet">
+
+<script>
+
+
+    Swal.fire({
+        title: "Wow!",
+        text: "Message!",
+        type: "success"
+    }).then(function () {
+        window.location = "http://localhost:5257/home/index";
+    });
+
+
+</script>

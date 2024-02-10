@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Demo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Demo.styles.css" asp-append-version="true" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.2/jsoneditor.css" type="text/css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.2/jsoneditor.min.js"> </script>
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.shCircleLoader.js" asp-append-version="true" > </script >
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.min.css" rel="stylesheet">
+
+
+     <style>
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            left:auto;  /*   : 100 %;   */
+            margin - top: -6px;
+        }
+
+        /* rotate caret on hover */
+        .dropdown-menu > li > a:hover:after {
+            text - decoration: underline;
+            transform: rotate(-90deg);
+        }
+        /* ============ desktop view ============ */
+
+        @@media all and (min-width: 992px) {
+
+            .dropdown-menu li {
+                position: relative;
+            }
+
+            .dropdown-menu .submenu {
+                display: none;
+                position: absolute;
+                left: 100%;
+                top: -7px;
+            }
+
+            .dropdown-menu .submenu-left {
+                right: 100%;
+                left: auto;
+            }
+
+            .dropdown-menu > li:hover {
+                background-color: #f1f1f1
+            }
+
+                .dropdown-menu > li:hover > .submenu {
+                    display: block;
+                }
+        }
+        /* ============ desktop view .end// ============ */
+
+        /* ============ small devices ============ */
+        @@media (max-width: 991px) {
+
+            .dropdown-menu .dropdown-menu {
+                margin-left: 0.7rem;
+                margin-right: 0.7rem;
+                margin-bottom: .5rem;
+            }
+        }
+        /* ============ small devices .end// ============ */
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="#">K8Svc Demo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                  
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">  Kubernetes  </a>
+                        <ul class="dropdown-menu">
+                            @*<li><a class="dropdown-item" href="#"> Cluster Info </a></li>*@
+                            <li>  <a class="nav-link text-dark" asp-area="" asp-controller="kubernetesmenu" asp-action="ClusterInfo">Cluster Info</a> </li>
+                            <li>
+                                <a class="nav-link text-dark" href="https://github.com/dfrazzitta/Demo" tabindex="-1" aria-disabled="true">Github</a>
+                            </li>
+                         </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">SqlServer</a>
+                        <ul class="dropdown-menu">
+
+                            <li><hr class="dropdown-divider"></li>
+                            @*
+                            <li><a class="dropdown-item" href="#">Separated link</a></li>
+                            *@
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="Index">Student</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Courses" asp-action="Index">Courses</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Departments" asp-action="Index">Department</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Enrollments" asp-action="Index">Enrollment</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Instructors" asp-action="Index">Instructor</a> </li>
+
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="getStudents">StudentGrid</a> </li>
+                           
+
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="getStudentsgrid">grid</a> </li>
+                            
+
+                        </ul>
+                    </li>
+ 
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Utilities</a>
+                        <ul class="dropdown-menu">
+ 
+                            <a class="dropdown-item" href="http://192.168.0.50:9090" tabindex="-1" aria-disabled="true">Prometheus</a>
+                            <a class="dropdown-item" href="http://192.168.0.51:3000" tabindex="-1" aria-disabled="true">Grafana</a>
+                            <a class="dropdown-item" href="http://192.168.0.55:9093" tabindex="-1" aria-disabled="true">Alert Mgr</a>
+                            <a class="dropdown-item" href=" https://vscode.dev" tabindex="-1" aria-disabled="true">Code</a>
+
+                        </ul>
+                    </li>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Mongo</a>
+                        <ul class="dropdown-menu">
+                            <li>  <a class="nav-link text-dark" asp-area="" asp-controller="GridController" asp-action="index">Mongo</a> </li>
+                            <li>  <a class="nav-link text-dark" asp-area="" asp-controller="Mongo" asp-action="index">Mongo Grid</a> </li>
+                            <li>  <a class="nav-link text-dark" asp-area="" asp-controller="kubernetesmenu" asp-action="Grid">Grid Info</a> </li>
+                        
+                            @*
+                            <a class="dropdown-item" href="http://192.168.0.50:9090" tabindex="-1" aria-disabled="true">Prometheus</a>
+                            <a class="dropdown-item" href="http://192.168.0.51:3000" tabindex="-1" aria-disabled="true">Grafana</a>
+                            <a class="dropdown-item" href="http://192.168.0.55:9093" tabindex="-1" aria-disabled="true">Alert Mgr</a>
+                            *@
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Help</a>
+                        <ul class="dropdown-menu">
+                             
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="home" asp-action="help">Help</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="home" asp-action="resume">Resume</a> </li>
+                            <li>  <a class="dropdown-item" asp-area="" asp-controller="home" asp-action="about">About</a> </l>
+                            @*
+                            <a class="dropdown-item" href="http://192.168.0.50:9090" tabindex="-1" aria-disabled="true">Prometheus</a>
+                            <a class="dropdown-item" href="http://192.168.0.51:3000" tabindex="-1" aria-disabled="true">Grafana</a>
+                            <a class="dropdown-item" href="http://192.168.0.55:9093" tabindex="-1" aria-disabled="true">Alert Mgr</a>
+                            *@
+                        </ul>
+                    </li>
+                    @*
+                    <li>  <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="grid">grid</a> </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                    *@
+                </ul>
+
+            </div>
+            <partial name="_LoginPartial" />
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+             @RenderBody()
+        </main>
+    </div>
+ 
+ 
+
+    <footer class="border-top footer text-muted">
+        <mini-profiler />
+        <div class="container">
+            &copy; 2024 - Demo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+ 
+        </div>
+    </footer>
+    @*
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    *@
+    @await RenderSectionAsync("Scripts", required: false)
+
+ 
+
+
+</body>
+</html>
+
+
+
+<script>
+
+    function helpMenu() {
+        Swal.fire({
+            title: "Good job!",
+            text: "You clicked the button!",
+            icon: "success"
+        });
+    }
+</script>
+
+
+
+@*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Data</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Data.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Data</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - Data - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+   
+    @await RenderSectionAsync("Scripts", required: false)
+    
+</body>
+</html>
+*@

@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  data:
+    image: ${DOCKER_REGISTRY-}data
+    build:
+      context: .
+      dockerfile: Data/Dockerfile
