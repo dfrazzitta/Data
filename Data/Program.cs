@@ -6,8 +6,11 @@ using Demo.Models;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+//using Microsoft.OpenApi.Models;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+ 
 
 builder.Services.AddHttpLogging(logging =>
 {
@@ -51,6 +54,12 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddDbContext<SchoolContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection1")));
+
+
+builder.Services.AddMetrics();
+
+ 
+
 var app = builder.Build();
 
 CreateDbIfNotExists(app);
@@ -61,7 +70,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var ctx = services.GetRequiredService<ApplicationDbContext>();
-    // ctx.Database.Migrate();
+    ctx.Database.Migrate();
 }
 
 app.UseMiniProfiler();
@@ -83,6 +92,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseMetricServer();
+app.UseHttpMetrics();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -96,11 +108,6 @@ app.Run();
 
 static void CreateDbIfNotExists(IHost host)
 {
-
-   
-
-
-
     // this is a commit
     using IServiceScope scope = host.Services.CreateScope();
     var services = scope.ServiceProvider;
@@ -112,7 +119,7 @@ static void CreateDbIfNotExists(IHost host)
 
         SchoolContext context = services.GetRequiredService<SchoolContext>();
         logger.LogError("After CreateDbIfNotExists");
-
+        context.Database.Migrate();
         bool b = context.Database.EnsureCreated();
         logger.LogError("be4 initializer CreateDbIfNotExists");
         if (!b)

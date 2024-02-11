@@ -19,7 +19,7 @@ namespace Demo.Data
             {
                 return;   // DB has been seeded
             }
-
+           
             List<User> appPerson = RandomData.GenerateUsers(100); //.First();
             List<Customer> cs = new List<Customer>();
             int count = 1;
@@ -34,12 +34,12 @@ namespace Demo.Data
                // c.Id = count;
                 cs.Add(c);
                 count++;
-               // context.Customers.Add(c);
-               // context.SaveChanges();
+                context.Customers.Add(c);
+                context.SaveChanges();
             }
 
-            context.Customers.AddRange(cs);
-            context.SaveChanges();
+           // context.Customers.AddRange(cs);
+           // context.SaveChanges();
 
             var ctb = cs.Count();
              
