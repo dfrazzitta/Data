@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace Demo.Controllers
 {
@@ -29,13 +33,40 @@ namespace Demo.Controllers
 
         public string Config(string jsonInput, string filename)
         {
-            string htmlFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "yamls/" + jsonInput + "/" + filename + ".yaml");
-            ProcessStartInfo startInfo = new ProcessStartInfo(@"c:\notepad++\notepad++.exe");
-            startInfo.WindowStyle = ProcessWindowStyle.Normal;
-            startInfo.Arguments = htmlFilePath;
-            Process p  = Process.Start(startInfo);
+            var b = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            if (b)
+            {
+                string htmlFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "yamls/" + jsonInput + "/" + filename + ".yaml");
+                ProcessStartInfo startInfo = new ProcessStartInfo(@"c:\notepad++\notepad++.exe");
+                startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                startInfo.Arguments = htmlFilePath;
+                Process p = Process.Start(startInfo);
+                return "";
+            }
+            else
+            {
+                 
+                var serverPath = _hostingEnvironment.WebRootPath + "\\yamls\\" + jsonInput + "\\" + filename + ".yaml";
+                var fileContents = System.IO.File.ReadAllText(_hostingEnvironment.WebRootPath + "\\yamls\\" + jsonInput + "\\" + filename + ".yaml");
+                int ct = fileContents.Split('\n').Length * 25;
+
+                JArray array = new JArray();
+                JValue text = new JValue(ct.ToString());
+                JValue date = new JValue(fileContents);
+
+                array.Add(text);
+                array.Add(date);
+
+                return array.ToString(); // fileContents;
+               // string htmlFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "yamls/" + jsonInput + "/" + filename + ".yaml");
+               // ProcessStartInfo startInfo = new ProcessStartInfo(@"gedit");
+              //  startInfo.WindowStyle = ProcessWindowStyle.Normal;
+              //  startInfo.Arguments = htmlFilePath;
+              //  Process p = Process.Start(startInfo);
+
+            }
            // p.MainWindowHandle;
-            return ""; // sb.ToString(); ;
+          //   return ""; // sb.ToString(); ;
         }
 
 

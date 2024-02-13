@@ -6,15 +6,19 @@ services:
     build:
       context: .
       dockerfile: Data/Dockerfile
+    depends_on:
+      - db
+      
+ 
 
-  mongo:
+  mongodb:
     image: mongo:latest
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+  #  container_name: "mongodb"
+ 
     ports:
       - "27017:27017"
+ 
+ 
 
   mongo-express:
     image: mongo-express
@@ -31,11 +35,12 @@ services:
     ports:
     - "1433:1433"
     environment:
-      SA_PASSWORD: "tvxs721#3TTv"
+      SA_PASSWORD: "tvxs721#3"
       ACCEPT_EULA: "Y"
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "tvxs721#3" -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 10s
       retries: 10
+ 
  

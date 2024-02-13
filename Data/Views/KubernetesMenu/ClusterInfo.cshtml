@@ -1,10 +1,9 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "ClusterInfo";
     Layout = "_Layout";
 }
 
-
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
@@ -13,27 +12,29 @@
 <link href="~/css/site.css" rel="stylesheet" />
 <script src="~/js/jquery.shcircleloader.js"></script>
 <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
- 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.all.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-
-  <style type="text/css">
+<style type="text/css">
     #jsoneditorItems {
-      width: 500px;
-      height: 500px;
+        width: 500px;
+        height: 500px;
     }
 
-  </style>
-  
- <div class="container">
+</style>
+
+<div class="container">
     <div class="centered">
         <h1>ClusterInfo</h1>
     </div>
 </div>
 <br />
 <div id="shclDefault"></div>
+<span id="para" style="white-space:pre"></span>
 <br />
+
 <div class="accordion" id="accordionExample">
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
@@ -46,40 +47,45 @@
                 <div class="container">
                     <div class="row">
                         <div class="col text-center">
- 
+
                             <strong>
                                 This Demo uses a Kubernetes cluster v1.26
                             </strong> <br />
-                            The external URL is supplied by tunnel supplied by serveo.net 
-                            via ssh -R 80:localhost:80 serveo.net
+                            The external URL is supplied by tunnel provided by serveo.net
+                            via ssh -R 80:localhost:#Port serveo.net
+                            <br />
+                            Application runs in Docker Containers <br />
+                            Application retrieves Kube data from 2 node 1 control plane kubernetes
                             <br />
                             Kubernetes ver 1.26 on Ubuntu 23.10<br />
-                            Longhorn used for distributed block storage<br />
-                            Flannel for  Network CNI<br />
-                            Istio for srvice mesh<br />
-                            Metallb is used as a LoadBalancer for prometheus/grafana/alerts<br />
-                            Ingress example (ingress-nginx) is used for custom ingress object<br />
-                            
+                            Longhorn used for distributed block storage(Container Storage Interface)<br />
+                            <br />
+                            Flannel for  Network CNI(Container Network Interface)
+                            <br />
+                            Istio for service mesh
+                            <br />
+                            Metallb is used as a LoadBalancer for prometheus/grafana/alerts
+                            <br />
+                            Ingress example (ingress-nginx) is used for custom ingress object
+                            <br />
+
                             <br />
                             <code>
                                 sample code html tag
-
-                            </code>  
-                          
+                            </code>
                             <br />
                             <br />
-                            <a href="https://kubernetes.io/docs/home/" class="btn btn-primary" data-bs-toggle="tooltip" 
-                                  data-bs-placement="bottom" title="GoTo Kubernetes Documentation">Kube Docs</a>
-                         </div>
+                            <a href="https://kubernetes.io/docs/home/" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="GoTo Kubernetes Documentation">Kube Docs</a>
+                        </div>
                         <div class="col text-center">
-                            <a id="myButtonNodes" onclick="Namespaces()" class="btn btn-primary" data-bs-toggle="tooltip" 
-                                  data-bs-placement="bottom" title="Populate Namespace before proceeding">Get Namespaces</a>
+                            <a id="myButtonNodes" onclick="Namespaces()" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Populate Namespace before proceeding">Get Namespaces</a>
                             <br />
                             <br />
                             <a onclick="helpnamespaces()" class="btn btn-primary" data-bs-toggle="tooltip"
-                               data-bs-placement="bottom" title="Help">ReadMe</a>
-
-                         </div>
+                               data-bs-placement="bottom" title="Please click Namespaces above to populate combo dropdown to the right!">ReadMe First</a>
+                        </div>
                         <div class="col text-center">
                             Click Namespaces to populate dropdown list
                             <select id="bonus">
@@ -100,16 +106,15 @@
                                data-bs-placement="bottom" title="Get Svc by NS">Get Svc</a>
                             <a id="myButtonNodesConfig" onclick="Config()" class="btn btn-primary" data-bs-toggle="tooltip"
                                data-bs-placement="bottom" title="Get Config by NS">Get Config</a>
-                               <br /><br />
+                            <br /><br />
                             <a id="myButtonNodesSecrets" onclick="Secrets()" class="btn btn-primary" data-bs-toggle="tooltip"
                                data-bs-placement="bottom" title="Get Secrets by NS">Get Secrets</a>
-                                
                             <a id="Deploy1" onclick="Deploy1()" class="btn btn-primary" data-bs-toggle="tooltip"
                                data-bs-placement="bottom" title="Get Deploy by NS">Get Deploy</a>
                             <br /><br />
                             <br />
                             <br />
-                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,59 +125,57 @@
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                 Cluster Global Info
             </button>
-             
-          </h2>
+        </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
             <div class="accordion-body">
-                <strong>These items generally represent global kubernetes resources</strong>                 
-                              
+                <strong>These items generally represent global kubernetes resources</strong>
+
                 <br />
                 <br />
                 <a id="Nodes" onclick="Nodes()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get Nodes">Get Nodes</a>
-                <a id="PriortyClasses" onclick="PriortyClasses()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="PriortyClasses" onclick="PriortyClasses()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get PriortyClasses">Get PriortyClasses</a>
- 
-                <a id="DaemonSets" onclick="DaemonSets()" class="btn btn-primary" data-bs-toggle="tooltip" 
+
+                <a id="DaemonSets" onclick="DaemonSets()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="DaemonSets">Get DaemonSets</a>
-                     
-                <a id="Events" onclick="Events()" class="btn btn-primary" data-bs-toggle="tooltip" 
+
+                <a id="Events" onclick="Events()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Events">Get Events</a>
- 
+
                 <a id="Component" onclick="Component()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get Component Status by NS">Get Component Status</a>
- 
+
                 <a id="EndPoints" onclick="EndPoints()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get ResourceQuota by NS">Get EndPoints</a>
 
-                 <a id="ProtectedVolumes" onclick="ProtectedVolumes()" class="btn btn-primary" data-bs-toggle="tooltip"
+                <a id="ProtectedVolumes" onclick="ProtectedVolumes()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get ProtectedVolumes by NS">Get ProtectedVolumes</a>
 
                 <a id="AllDeployments" onclick="AllDeployments()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get All Deployments">Get All Deployments</a>
-  
+
                 @* /////////////////////////////////////////////////////////////////  *@
                 <br />
                 <br />
-
-                <a id="CsiDrivers" onclick="CsiDrivers()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="CsiDrivers" onclick="CsiDrivers()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get CsiDrivers">Get CSIDrivers</a>
-                <a id="CsiNodes" onclick="CsiNodes()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="CsiNodes" onclick="CsiNodes()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get CsiNodes">Get CSINodes</a>
-                <a id="StateFullSet" onclick="StateFullSet()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="StateFullSet" onclick="StateFullSet()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get StateFullSet">Get StateFullSet</a>
-                    
-                <a id="serviceaccounts" onclick="serviceaccounts()" class="btn btn-primary" data-bs-toggle="tooltip" 
+
+                <a id="serviceaccounts" onclick="serviceaccounts()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Service Accounts">Get Service Accounts</a>
                 <a id="LimitRange" onclick="ReplicaSets()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get ReplicaSets by NS">Get ReplicaSets</a>
-                <a id="runtimeclasses" onclick="runtimeclasses()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="runtimeclasses" onclick="runtimeclasses()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get RuntimeClasses">Get RuntimeClasses</a>
-                <a id="poddisruptionbudgets" onclick="poddisruptionbudgets()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="poddisruptionbudgets" onclick="poddisruptionbudgets()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get PodDisruptionBudgets">Get PodDisruptionBudgets</a>
-                <a id="deploy" onclick="deploy()" class="btn btn-primary" data-bs-toggle="tooltip" 
+                <a id="deploy" onclick="deploy()" class="btn btn-primary" data-bs-toggle="tooltip"
                    data-bs-placement="bottom" title="Get Deploy">Get Deploy</a>
-             </div>
+            </div>
         </div>
     </div>
     <div class="accordion-item">
@@ -200,250 +203,364 @@
         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 <div class="container">
-                    <br />
-                    <br />
-                     <div id="mydiv">
-                        <label id="orderName" style="text-align: center;vertical-align: middle;" >
-                            <strong>Common Yamls</strong></label>
+                    <div id="divtext" style="display:none">
+                        <textarea id="textarea" style="width:800px"> 
+                        </textarea>
+                        <a id="d1" onclick="hidediv()" class="btn btn-primary" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Close">Close</a>
                     </div>
-                     <br />
-                     <br />
-                     <div class="row">
-                      <div class="col"> 
-                           <strong>Deploy & DaemonSet </strong>
-                       <a id="d1" onclick="config1('deployment', 'krap')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Deploy yaml">Deployment Init</a>
-                              <br />
-                       <a id="d1" onclick="config1('deployment')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Deploy yaml">Deployment Simple</a>
-                              <br />
-                       <a id="d1" onclick="config1('deployment')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Deploy yaml">Deployment Pivilege</a>
-                              <br />
-                       <a id="d1" onclick="config1('deployment')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Deploy yaml">Deployment Env</a>
-                              <br />
-                       <a id="d1" onclick="config1('deployment')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Deploy yaml">Deployment WebSvr</a>
-                              <br />
- 
-                       <a id="d1" onclick="config1('DaemonSet', 'simple-daemon-set')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Simple Daemon Set yaml">Simple Daemon Set</a>
-                              <br />
-                      </div>
-                      <div class="col">
-                           <strong>Service </strong>
-                           <br />
-                       <a id="d1" onclick="config1('service', 'external-ips')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="External IP yaml">External IP</a>
-                              <br />
-                       <a id="d1" onclick="config1('service', 'external-name')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="External Name yaml">External Name</a>
-                              <br />
-                       <a id="d1" onclick="config1('service', 'headless-service')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Headless yaml">Headless</a>
-                              <br />
-                       <a id="d1" onclick="config1('service', 'load-balancer')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Load balancer yaml">Load balancer</a>
-                              <br />
-                       <a id="d1" onclick="config1('service', 'node-port')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Node Port yaml">Node Port</a>
-                       <a id="d1" onclick="config1('endpoints', 'endpoint-slice')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="EndPoint Slice yaml">EndPoint Slice</a>
-                              <br />
-                       <a id="d1" onclick="config1('endpoints', 'service-and-endpoint')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                           data-bs-placement="bottom" title="Serice & Endpoint yaml">Serice & Endpoint</a>
-                              <br />
-                      </div>
-                      <div class="col">
-                           <strong>Pod Info </strong>
-                           <br />
-                           <a id="d1" onclick="config1('pod', 'advanced-liveness')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Advanced liveness yaml">Advanced Liveness</a>
-                           <a id="d2" onclick="config1('pod', 'dns-config')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Dns Config yaml">Dns Config</a>
-                           <a id="d3" onclick="config1('pod', 'dns-policy')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Dns Policy yaml">Dns Policy</a>
-                           <a id="d4" onclick="config1('pod', 'emptydir')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Empty Dir yaml">Empty Dir</a>
-                           <a id="d1" onclick="config1('pod', 'file-or-create')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="File or Create yaml">File-or-Create</a>
-                           <a id="d2" onclick="config1('pod', 'host-aliases')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Host Aliases yaml">Host Aliases</a>
-                           <a id="d3" onclick="config1('pod', 'hostdir')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Hostdir yaml">Host Dir</a>
-                           <a id="d4" onclick="config1('pod', 'image-pull-secrets')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Image Pull Secrets yaml">Image Pull Secrets</a>
-                           <a id="d1" onclick="config1('pod', 'init-container')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Init Container yaml">Init Container</a>
-                           <a id="d2" onclick="config1('pod', 'lifecycle')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="LifeCycle yaml">Life Cycle</a>
-                           <a id="d3" onclick="config1('pod', 'memory-request-limit')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Memory Request Limit yaml">Memory Request Limit</a>
-                      </div>
-                      <div class="col">
-                           <strong>More Pod Info </strong>
-                           <br />
-                           <a id="d1" onclick="config1('pod', 'readiness')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Readiness yaml">Readiness</a>
+                    <br />
+                    <br />
+                    <div id="mydiv">
+                        <label id="orderName" style="text-align: center;vertical-align: middle;">
+                            <strong>Common Yamls</strong>
+                        </label>
 
-                           <a id="d3" onclick="config1('pod', 'resource-limit')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Resource Limit yaml">Resource Limit</a>
-                           <a id="d4" onclick="config1('pod', 'resource-request')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Resource Request yaml">Resource Request</a>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col">
+                            <strong>Deploy & DaemonSet </strong>
+                            <a id="d1" onclick="config1('deployment', 'init-container-msg')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deploy yaml">Deployment Init</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('deployment', 'simple-deployment')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deploy yaml">Deployment Simple</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('deployment', 'simple-deployment-privileged')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deploy yaml">Deployment Pivilege</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('deployment', 'simple-deployment-with-environment')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deploy yaml">Deployment Env</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('deployment', 'webserver')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deploy yaml">Deployment WebSvr</a>
+                            <br />
+                            <br />
+                            <br />
+                        </div>
+                        <div class="col">
+                            <strong>Service </strong>
+                            <br />
+                            <a id="d1" onclick="config1('service', 'external-ips')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="External IP yaml">External IP</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('service', 'external-name')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="External Name yaml">External Name</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('service', 'headless-service')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Headless yaml">Headless</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('service', 'load-balancer')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Load balancer yaml">Load balancer</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('service', 'node-port')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Node Port yaml">Node Port</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('endpoints', 'endpoint-slice')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="EndPoint Slice yaml">EndPoint Slice</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('endpoints', 'service-and-endpoint')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Serice & Endpoint yaml">Serice & Endpoint</a>
+                            <br />
+                            <br />
+                        </div>
+                        <div class="col">
+                            <strong>Pod Info </strong>
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'advanced-liveness')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Advanced liveness yaml">Advanced Liveness</a>
+                            <br />
+                            <br />
+                            <a id="d2" onclick="config1('pod', 'dns-config')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Dns Config yaml">Dns Config</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'dns-policy')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Dns Policy yaml">Dns Policy</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'emptydir')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Empty Dir yaml">Empty Dir</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'file-or-create')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="File or Create yaml">File-or-Create</a>
+                            <br />
+                            <br />
+                            <a id="d2" onclick="config1('pod', 'host-aliases')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Host Aliases yaml">Host Aliases</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'hostdir')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Hostdir yaml">Host Dir</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'image-pull-secrets')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Image Pull Secrets yaml">Image Pull Secrets</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'init-container')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Init Container yaml">Init Container</a>
+                            <br />
+                            <br />
+                            <a id="d2" onclick="config1('pod', 'lifecycle')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="LifeCycle yaml">Life Cycle</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'memory-request-limit')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Memory Request Limit yaml">Memory Request Limit</a>
+                            <br />
+                            <br />
+                        </div>
+                        <div class="col">
+                            <strong>More Pod Info </strong>
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'readiness')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Readiness yaml">Readiness</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'resource-limit')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Resource Limit yaml">Resource Limit</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'resource-request')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Resource Request yaml">Resource Request</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'sa-token')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="SA Token yaml">SA Token</a><br />
+                            <br />
+                            <br />
+                            <a id="d2" onclick="config1('pod', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Simple yaml">Simple</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'subpath')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="SubPath yaml">SubPath</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'subpathexpr')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="SubPath Expression yaml">Subpath Expression</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'taints-toleration')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Taints Toleration yaml">Taints Toleration</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'termination-simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Termination Simple">Termination Simple</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'multi-container')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Multi Container yaml">Multi Container</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ResourceQuotas', 'quotas')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Quotas">Quotas</a>
+                        </div>
+                        <div class="col">
+                            <strong>Even More Pod Info </strong>
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'toleration')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Toleration yaml">Toleration</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('pod', 'topology-spread-constraints')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Topology Spread Constraints yaml">Topology Spread Constraints</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'topology-spread-constraints-with-node-affinity')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Topology Spread Constraints w/ Node Affinity">Topology Spread Constraints w/ Node Affinity</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('pod', 'node-affinity')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Node Affinity yaml">Node Affinity</a>
+                            <br />
+                            <br />
+                            <a id="d2" onclick="config1('pod', 'pod-pvc')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Pod PVC yaml">Pod PVC</a>
+                            <br />
+                            <br />
+                            <a id="d3" onclick="config1('pod', 'privileged-namespace')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Privileged Namespace yaml">Privileged Namespace</a>
+                            <br />
+                            <br />
 
-                           <a id="d1" onclick="config1('pod', 'sa-token')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="SA Token yaml">SA Token</a><br />
-                           <a id="d2" onclick="config1('pod', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Simple yaml">Simple</a>
-                           <a id="d3" onclick="config1('pod', 'subpath')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="SubPath yaml">SubPath</a>
-                           <a id="d4" onclick="config1('pod', 'subpathexpr')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="SubPath Expression yaml">Subpath Expression</a>
-                            <a id="d4" onclick="config1('pod', 'taints-toleration')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Taints Toleration yaml">Taints Toleration</a>
-
-                            <a id="d1" onclick="config1('pod', 'termination-simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Termination Simple">Termination Simple</a>
-                            <a id="d4" onclick="config1('pod', 'multi-container')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Multi Container yaml">Multi Container</a>
-                            <a id="d1" onclick="config1('ResourceQuotas', 'quotas')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Quotas">Quotas</a>
-                      </div>  
-                      <div class="col">
-                           <strong>Even More Pod Info </strong>
-                           <br />
-                            <a id="d4" onclick="config1('pod', 'toleration')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Toleration yaml">Toleration</a>
-                            <a id="d4" onclick="config1('pod', 'topology-spread-constraints')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Topology Spread Constraints yaml">Topology Spread Constraints</a>
-
-                            <a id="d1" onclick="config1('pod', 'topology-spread-constraints-with-node-affinity')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Topology Spread Constraints w/ Node Affinity">Topology Spread Constraints w/ Node Affinity</a>
-                           <a id="d1" onclick="config1('pod', 'node-affinity')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Node Affinity yaml">Node Affinity</a>
-                           <a id="d2" onclick="config1('pod', 'pod-pvc')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Pod PVC yaml">Pod PVC</a>
-                           <a id="d3" onclick="config1('pod', 'privileged-namespace')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Privileged Namespace yaml">Privileged Namespace</a>
-
-                            <a id="d4" onclick="config1('pod', 'projected')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Projected yaml">Projected</a>
-                             <a id="d4" onclick="config1('PriorityClass', 'default-priority-class')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Default Priority Class yaml">Default Priority Class</a>
- 
-                
-                      </div>
-                      <div class="col">
-                           <strong>SA,STS,ConfigMap </strong>
-                           <br />
-                     <a id="d1" onclick="config1('configmap', 'configmap')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                       data-bs-placement="bottom" title="Configmap yaml">Configmap</a>
-                        <br />
-                     <a id="d1" onclick="config1('Statefulset', 'simple-stateful-set')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                       data-bs-placement="bottom" title="Statefulset yaml">Statefulset</a>
-                        <br />
-                     <a id="d1" onclick="config1('serviceaccount', 'service-account-pod')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                       data-bs-placement="bottom" title="ServiceAccount yaml">ServiceAccount</a>
-                      </div>
-                    </div> 
+                            <a id="d4" onclick="config1('pod', 'projected')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Projected yaml">Projected</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('PriorityClass', 'default-priority-class')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Default Priority Class yaml">Default Priority Class</a>
+                        </div>
+                        <div class="col">
+                            <strong>SA,STS,ConfigMap </strong>
+                            <br />
+                            <a id="d1" onclick="config1('configmap', 'configmap')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Configmap yaml">Configmap</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('Statefulset', 'simple-stateful-set')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Statefulset yaml">Statefulset</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('serviceaccount', 'service-account-pod')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="ServiceAccount yaml">ServiceAccount</a>
+                        </div>
+                    </div>
                 </div>
                 <br />
                 <br />
-                 <div id="mydiv1">
-                    <label id="orderName" style="text-align: center;vertical-align: middle;" >
-                        <strong>General Yamls</strong></label>
-                 </div>
-                 <br />
-                 <br />
-                 <div class="container">
-                  <div class="row">
-                    <div class="col">
-                       <strong> (C)Roles,(C)Bindings  </strong>
-                        <br />
-                            <a id="d4" onclick="config1('ClusterRole', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="ClusterRole yaml">ClusterRole</a>
-                            <a id="d1" onclick="config1('ClusterRoleBinding', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="ClusterRoleBinding">ClusterRoleBinding</a>
-                             <a id="d4" onclick="config1('Role', 'role')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Role yaml">Role</a>
-                            <a id="d1" onclick="config1('RoleBinding', 'role-binding')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="RoleBinding">RoleBinding</a>
-                         <br />
-                         <br />
-                        <strong> Prometheus Operator </strong>
-                         <br />
-                             <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="CronJob">Pod Monitor</a>
-                             <a id="d1" onclick="config1('Job', 'simplex')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Job TimeOut">Svc Monitor</a>
-                             <br />
-                             <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="CronJob">Blackbox Exporter</a>
-                             <br />
-                             <a id="d1" onclick="config1('networkpolicy', 'default-deny-egress')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Deny Egress">Alert</a>
-                             <br />
-                             <a id="d1" onclick="config1('networkpolicy', 'cplx')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Complex Network Policy">Node Exporter</a>
-                      <br />
+                <div id="mydiv1">
+                    <label id="orderName" style="text-align: center;vertical-align: middle;">
+                        <strong>General Yamls</strong>
+                    </label>
+                </div>
+                <br />
+                <br />
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <strong> (C)Roles,(C)Bindings  </strong>
+                            <br />
+                            <a id="d4" onclick="config1('ClusterRole', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="ClusterRole yaml">ClusterRole</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ClusterRoleBinding', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="ClusterRoleBinding">ClusterRoleBinding</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('Role', 'role')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Role yaml">Role</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('RoleBinding', 'role-binding')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="RoleBinding">RoleBinding</a>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <strong> Prometheus Operator </strong>
+                            <br />
+                            <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="CronJob">Pod Monitor</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('Job', 'simplex')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Job TimeOut">Svc Monitor</a>
+                            <br />
+                            <br />
+
+                            <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="CronJob">Blackbox Exporter</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('networkpolicy', 'default-deny-egress')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deny Egress">Alert</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('networkpolicy', 'cplx')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Complex Network Policy">Node Exporter</a>
+                            <br />
+                        </div>
+                        <div class="col">
+                            <strong> Stateful & Storage & PV/PVC & Secrets </strong>
+                            <br />
+                            <a id="d4" onclick="config1('StateFulSet', 'simple-stateful-set')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="StateFulSet yaml">StateFulSet</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('StorageClass', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="StorageClass">StorageClass</a>
+                            <br />
+                            <br />
+                            <a id="d4" onclick="config1('PersistentVolume', 'local')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="PersistentVolume yaml">PersistentVolume</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('PersistentVolumeClaim', 'pvc')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="PersistentVolumeClaim yaml">PersistentVolumeClaim</a>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <strong>Secrets</strong>
+                            <br />
+
+                            <a id="d4" onclick="config1('Secret', 'secret-key-ref')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Secret Key Ref yaml">Secret Key Ref</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('Secret', 'simple-secret')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Simple Secret">Simple Secret</a>
+                        </div>
+                        <div class="col">
+                            <strong> Misc  </strong>
+                            <br />
+                            <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="CronJob">CronJob</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('Job', 'simplex')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Job TimeOut">Job TimeOut</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="CronJob">CronJob</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('networkpolicy', 'default-deny-egress')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Deny Egress">Deny Egress</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('networkpolicy', 'cplx')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Complex Network Policy">Complex Network Policy</a>
+                            <br />
+                            <br />
+                            <strong> Ingress  </strong>
+                            <br />
+
+                            <a id="d1" onclick="config1('ingress', 'fanout')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Fanout">Fanout</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'ingress')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Std Ingress">Std Ingress</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'ingress-class')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Ingress Class">Ingress Class</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'nohost')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="No Host">No Host</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'rewrite')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Rewrite">Rewrite</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'tls')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="TLS">TLS</a>
+                            <br />
+                            <br />
+                            <a id="d1" onclick="config1('ingress', 'virtualhosting')" class="btn btn-primary" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="Virtual Hosting">Virtual Hosting</a>
+                        </div>
                     </div>
-                    
-                    <div class="col">
-                      <strong> Stateful & Storage & PV/PVC & Secrets </strong>
-                        <br />
-                             <a id="d4" onclick="config1('StateFulSet', 'simple-stateful-set')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="StateFulSet yaml">StateFulSet</a>
-                            <a id="d1" onclick="config1('StorageClass', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="StorageClass">StorageClass</a>
-                            <a id="d4" onclick="config1('PersistentVolume', 'local')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="PersistentVolume yaml">PersistentVolume</a>
-                            <a id="d1" onclick="config1('PersistentVolumeClaim', 'pvc')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="PersistentVolumeClaim yaml">PersistentVolumeClaim</a>
-                       <br />
-                       <br />
-                      <strong>Secrets</strong>
-                       <br />
- 
-                            <a id="d4" onclick="config1('Secret', 'secret-key-ref')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Secret Key Ref yaml">Secret Key Ref</a>
-                            <a id="d1" onclick="config1('Secret', 'simple-secret')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Simple Secret">Simple Secret</a>
-                    </div>
-                    <div class="col">
-                      <strong> Misc  </strong>
-                      <br />
-                             <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="CronJob">CronJob</a>
-                             <a id="d1" onclick="config1('Job', 'simplex')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Job TimeOut">Job TimeOut</a>
-                             <a id="d1" onclick="config1('CronJob', 'simple')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="CronJob">CronJob</a>
-                             <a id="d1" onclick="config1('networkpolicy', 'default-deny-egress')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Deny Egress">Deny Egress</a>
-                             <a id="d1" onclick="config1('networkpolicy', 'cplx')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Complex Network Policy">Complex Network Policy</a>
-                      <br />
-                      <br />
-                      <strong> Ingress  </strong>
-                      <br />
- 
-                             <a id="d1" onclick="config1('ingress', 'fanout')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Fanout">Fanout</a>
-                             <a id="d1" onclick="config1('ingress', 'ingress')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Std Ingress">Std Ingress</a>
-                             <a id="d1" onclick="config1('ingress', 'ingress-class')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Ingress Class">Ingress Class</a>
-                             <a id="d1" onclick="config1('ingress', 'nohost')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="No Host">No Host</a>
-                             <a id="d1" onclick="config1('ingress', 'rewrite')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Rewrite">Rewrite</a>
-                             <a id="d1" onclick="config1('ingress', 'tls')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="TLS">TLS</a>
-                             <a id="d1" onclick="config1('ingress', 'virtualhosting')" class="btn btn-primary" data-bs-toggle="tooltip" 
-                             data-bs-placement="bottom" title="Virtual Hosting">Virtual Hosting</a>
-                    </div>
-                   </div>
                 </div>
             </div>
         </div>
@@ -452,14 +569,32 @@
 
 
 @section scripts {
-<script>
-      function config1(url, second)
-        { 
+    <script>
+
+        function scrolltop() {
+            const accordionItems = document.querySelectorAll('.accordion-collapse')
+            const acc = document.getElementById('accordionExample')
+
+            accordionItems.forEach((el) => {
+                el.addEventListener('shown.bs.collapse', (e) => {
+                    var scrollOffset = acc.scrollTop + el.parentNode.offsetTop
+                    acc.scroll({
+                        top: scrollOffset,
+                        left: 0,
+                        behavior: 'smooth'
+                    })
+                })
+            })
+        }
+        function hidediv() {
+            $('#divtext').hide();
+        }
+        function config1(url, second) {
             var url1 = "/yaml/Config/"; // + url;
             //alert(url1);
-             $.ajax({
+            $.ajax({
                 type: "GET",
-                url: url1,  
+                url: url1,
                 data: { jsonInput: url, filename: second },
                 //.JSON.stringify(ns) }, //JSON.stringify($('#namespacetext').text()) },
                 contentType: "application/json;charset=utf-8",
@@ -467,7 +602,27 @@
                 datatype: "json",
                 //  debugger;
                 success: function (response) {
-                    // do nothing
+                    if (response === "") {
+
+                    } else {
+                        // debugger;
+                        var jj = JSON.parse(response);
+                        //  debugger;
+                        //const txt = document.querySelector('#divtext');
+                        //txt.display = 'block';
+                        $('#divtext').show();
+                        var ct = jj[0];
+                        var km = jj[1];
+                        $('#textarea').height(jj[0]);
+                        $('#textarea').val(jj[1]);
+                        // scrolltop();
+
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "Check Editor for YAML at top of panel",
+                            icon: "info"
+                        });
+                    }
                 },
                 error: function (jqXHR, exception) {
                     var msg = '';
@@ -486,39 +641,34 @@
                     } else {
                         msg = 'Uncaught Error.\n' + jqXHR.responseText;
                     }
-                   // alert(msg);
-                        Swal.fire({
-                          title: "Notice!",
-                          text: msg,
-                          icon: "info"
-                        });
+                    // alert(msg);
+                    Swal.fire({
+                        title: "Notice!",
+                        text: msg,
+                        icon: "info"
+                    });
                 }
             });
         };
 
-
-
         function showspin() {
-            $('#shclDefault').show();  
+            $('#shclDefault').show();
         }
 
         function hidespin() {
-            $('#shclDefault').hide();  
+            $('#shclDefault').hide();
         }
 
-       // $('#shclDefault').shCircleLoader();
-
-
-        $(document).ready(function () {
+       $(document).ready(function () {
             console.log("ready!");
 
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
-          
-           //  
-           $('#shclDefault').shCircleLoader();
+
+            //
+            $('#shclDefault').shCircleLoader();
             var i = 0;
             setInterval(function () {
                 $('#shclDefault').shCircleLoader('progress', i + '%');
@@ -542,25 +692,20 @@
             }
             return result;
         }
-// #region helpnamespaces
-    function helpnamespaces()
-    {
-        Swal.fire({
-            title: "Help!",
-            text: "Please choose Namespace to populate dropdown combo!",
-            type: "success"
-        });
-        //.then(function () {
-        //    window.location = "http://localhost:5257/kubernetesmenu/ClusterInfo";
-        //});
-    }
+        // #region helpnamespaces
+        function helpnamespaces() {
+            Swal.fire({
+                title: "Help!",
+                text: "Please choose Namespace to populate dropdown combo to the right!",
+                type: "success"
+            });
+            //.then(function () {
+            //    window.location = "http://localhost:5257/kubernetesmenu/ClusterInfo";
+            //});
+        }
 
-// #endregion
-
-
-
-// #region Help
-      function Help() {
+        // #region Help
+        function Help() {
             showspin();
             jQuery.ajaxSetup({ async: true });
             $.ajax({
@@ -576,33 +721,18 @@
                     //setTimeout(function () {
                     //    console.log("Hello World");
                     //}, 5000);
-
                 },
                 success: function (response) {
                     hidespin();
-                    //debugger;
-                    /*
                     var tt = response.items;
-                    if (tt.length == 0) {
-                        alert("No Items returned !!!!")
-                        hidespin();
-                        jQuery.ajaxSetup({ async: true });
-                        return false;
-                    }
-                     */
-                    // var listNames = response.items;
-
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -621,21 +751,18 @@
                         msg = 'Uncaught Error.\n' + jqXHR.responseText;
                     }
                     //alert(msg);
-                        Swal.fire({
-                          title: "Notice!",
-                          text: msg,
-                          icon: "info"
-                        });
+                    Swal.fire({
+                        title: "Notice!",
+                        text: msg,
+                        icon: "info"
+                    });
                 }
             });
             jQuery.ajaxSetup({ async: true });
-      }
-// #endregion CsiDrivers StateFullSet serviceaccounts     
-
-
-
-// #region CsiNodes
-        function ReplicaSets () {
+        }
+        // #endregion CsiDrivers StateFullSet serviceaccounts
+        // #region CsiNodes
+        function ReplicaSets() {
             var ns = "test";
             showspin();
             jQuery.ajaxSetup({ async: true });
@@ -652,17 +779,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -681,29 +817,29 @@
                         msg = 'Uncaught Error.\n' + jqXHR.responseText;
                     }
                     //alert(msg);
-                        Swal.fire({
-                          title: "Notice!",
-                          text: msg,
-                          icon: "success"
-                        });
+                    Swal.fire({
+                        title: "Notice!",
+                        text: msg,
+                        icon: "success"
+                    });
                 }
             });
             jQuery.ajaxSetup({ async: true });
         }
- 
-// #region CsiNodes
+
+        // #region CsiNodes
         function Deploy1() {
-          var ns = $('#namespacetext').val();
-        
-          if (ns === null || ns === '' ) { 
-              Swal.fire({
-                 title: "Notice!",
-                 text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
-                 icon: "info"
-              });
-            // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
-              return;
-          }
+            var ns = $('#namespacetext').val();
+
+            if (ns === null || ns === '') {
+                Swal.fire({
+                    title: "Notice!",
+                    text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
+                    icon: "info"
+                });
+                // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
+                return;
+            }
             showspin();
             jQuery.ajaxSetup({ async: true });
             $.ajax({
@@ -726,23 +862,20 @@
                         hidespin();
                         jQuery.ajaxSetup({ async: true });
                         Swal.fire({
-                          title: "Notice!",
-                          text: "No Items returned !!!!",
-                          icon: "success"
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
                         });
                         return false;
                     }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -766,14 +899,7 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
-
-
-
-
-// #region CsiNodes
+        // #region CsiNodes
         function deploy() {
             var ns = "test";
             showspin();
@@ -791,17 +917,27 @@
                 },
                 success: function (response) {
                     hidespin();
-                    const container = document.getElementById('jsoneditor')
 
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
+                    const container = document.getElementById('jsoneditor')
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -826,7 +962,7 @@
         }
         // #endregion
 
-// #region CsiNodes
+        // #region CsiNodes
         function runtimeclasses() {
             var ns = "test";
             showspin();
@@ -844,17 +980,27 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
 
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -879,12 +1025,7 @@
         }
         // #endregion
 
-
-
-
-
-
-// #region CsiNodes
+        // #region CsiNodes
         function poddisruptionbudgets() {
             var ns = "test";
             showspin();
@@ -902,17 +1043,27 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
 
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -937,12 +1088,7 @@
         }
         // #endregion
 
-
-
-
-
-
-// #region CsiNodes
+        // #region CsiNodes
         function serviceaccounts() {
             var ns = "test";
             showspin();
@@ -960,17 +1106,28 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
 
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
 
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -995,12 +1152,7 @@
         }
         // #endregion
 
-
-
-
-
-
-// #region CsiNodes
+        // #region CsiNodes
         function StateFullSet() {
             var ns = "test";
             showspin();
@@ -1018,17 +1170,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1052,12 +1213,7 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
-
-
-// #region CsiNodes
+        // #region CsiNodes
         function CsiNodes() {
             var ns = "test";
             showspin();
@@ -1075,17 +1231,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1108,11 +1273,6 @@
             });
             jQuery.ajaxSetup({ async: true });
         }
-
-
-
-
-
 
         // #endregion
         function CsiDrivers() {
@@ -1132,17 +1292,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1184,17 +1353,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1236,17 +1414,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1270,10 +1457,6 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
-
         // #region Help
         function EndPoints() {
             var ns = "test";
@@ -1292,17 +1475,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1345,17 +1537,27 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
 
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1379,11 +1581,6 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
-
-
         // #region Help
         function DaemonSets() {
             var ns = "test";
@@ -1402,17 +1599,26 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1436,9 +1642,6 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
         // #region Help
         function PriortyClasses() {
             var ns = "test";
@@ -1457,17 +1660,27 @@
                 },
                 success: function (response) {
                     hidespin();
-                    const container = document.getElementById('jsoneditor')
 
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
+                    const container = document.getElementById('jsoneditor')
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); }; // OPTIONAL
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
-
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -1510,15 +1723,27 @@
                 },
                 success: function (response) {
                     hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) {  
+                    var okcallback = function (jsonobj) {
+                        /*
                         Swal.fire({
                             title: "Help!",
                             text: JSON.stringify(tt),
                             type: "success"
-                        });
+                        });*/
                     };
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
@@ -1550,23 +1775,14 @@
             jQuery.ajaxSetup({ async: true });
         }
         // #endregion
-
-
-
-
-
-
-
-
-// #region Component
+        // #region Component
         function Component() {
-
             var ns = "test";
             // alert(ns)
-           // if (ns === null || ns === '') {
-           //     alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
-           //     return;
-           // }
+            // if (ns === null || ns === '') {
+            //     alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
+            //     return;
+            // }
             showspin();
             jQuery.ajaxSetup({ async: true });
             $.ajax({
@@ -1582,37 +1798,184 @@
                     //setTimeout(function () {
                     //    console.log("Hello World");
                     //}, 5000);
-
                 },
                 success: function (response) {
                     hidespin();
-                    //debugger;
-                    /*
                     var tt = response.items;
                     if (tt.length == 0) {
-                        alert("No Items returned !!!!")
+                        //alert("No Items returned !!!!")
                         hidespin();
                         jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
                         return false;
                     }
-                     */
-                    // var listNames = response.items;
 
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) {  
-                        Swal.fire({
-                            title: "Help!",
-                            text: JSON.stringify(tt),
-                            type: "success"
-                        });
+                    var okcallback = function (jsonobj) {
+                        /*
+                         Swal.fire({
+                             title: "Help!",
+                             text: JSON.stringify(tt),
+                             type: "success"
+                         });  */
                     };
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
                     jsonDialog(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
+                },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect.\n Verify Network.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    }
+                    alert(msg);
+                }
+            });
+            jQuery.ajaxSetup({ async: true });
+        }
+        // #region
+        // #region SECRETS
+        function Secrets() {
+            var ns = $('#namespacetext').val();
+            if (ns === null || ns === '') {
 
+                Swal.fire({
+                    title: "Notice!",
+                    text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
+                    icon: "success"
+                });
+                return;
+            }
+            showspin();
+            jQuery.ajaxSetup({ async: true });
+            $.ajax({
+                type: "GET",
+                url: "/api/KubernetesWebApi/secrets", // '@Url.Action("/api/KubernetesWebApi/GetNodeList")',
+                data: { jsonInput: ns },
+                //.JSON.stringify(ns) }, //JSON.stringify($('#namespacetext').text()) },
+                contentType: "application/json;charset=utf-8",
+                //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                datatype: "json",
+                beforeSend: function () {
+                    showspin();
+                    //setTimeout(function () {
+                    //    console.log("Hello World");
+                    //}, 5000);
+                },
+                success: function (response) {
+                    hidespin();
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
+                    // var listNames = response.items;
+                    const container = document.getElementById('jsoneditor')
+                    var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
+                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
+                    var cancelcallback = function () { }; // OPTIONAL
+                    var errorcallback = function (e) { alert(e); }; // OPTIO
+                    // hidespin();
+                    jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
+                },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect.\n Verify Network.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    }
+                    alert(msg);
+                }
+            });
+            jQuery.ajaxSetup({ async: true });
+        }
+        // #region
+
+        // #region CONFIG
+        function Config() {
+            var ns = $('#namespacetext').val();
+            // alert(ns)
+            if (ns === null || ns === '') {
+                Swal.fire({
+                    title: "Notice!",
+                    text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
+                    icon: "success"
+                });
+                // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
+                return;
+            }
+            showspin();
+            jQuery.ajaxSetup({ async: true });
+            $.ajax({
+                type: "GET",
+                url: "/api/KubernetesWebApi/config", // '@Url.Action("/api/KubernetesWebApi/GetNodeList")',
+                data: { jsonInput: ns },
+                contentType: "application/json;charset=utf-8",
+                datatype: "json",
+                beforeSend: function () {
+                    showspin();
+                    //setTimeout(function () {
+                    //    console.log("Hello World");
+                    //}, 5000);
+
+                },
+                success: function (response) {
+                    hidespin();
+                    //debugger;
+                    var tt = response.items;
+                    if (tt.length == 0) {
+                        //alert("No Items returned !!!!")
+                        hidespin();
+                        jQuery.ajaxSetup({ async: true });
+                        Swal.fire({
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
+                        });
+                        return false;
+                    }
+                    const container = document.getElementById('jsoneditor')
+                    var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
+                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); };
+                    var cancelcallback = function () { }; // OPTIONAL
+                    var errorcallback = function (e) { alert(e); }; // OPTIO
+                    jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
                 },
 
                 error: function (jqXHR, exception) {
@@ -1639,185 +2002,15 @@
         }
         // #region
 
-
-
-
-// #region SECRETS
-        function Secrets() {
-
-            var ns = $('#namespacetext').val();
-            
-            if (ns === null || ns === '') {
-             
-                Swal.fire({
-                           title: "Notice!",
-                           text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
-                           icon: "success"
-                });
-                return;
-            }
-            showspin();
-            jQuery.ajaxSetup({ async: true });
-            $.ajax({
-                type: "GET",
-                url: "/api/KubernetesWebApi/secrets", // '@Url.Action("/api/KubernetesWebApi/GetNodeList")',
-                data: { jsonInput: ns },
-                //.JSON.stringify(ns) }, //JSON.stringify($('#namespacetext').text()) },
-                contentType: "application/json;charset=utf-8",
-                //contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                datatype: "json",
-                beforeSend: function () {
-                    showspin();
-                    //setTimeout(function () {
-                    //    console.log("Hello World");
-                    //}, 5000);
-
-                },
-                success: function (response) {
-                    hidespin();
-                    //debugger;
-                     
-                    var tt = response.items;
-                    if (tt.length == 0) {
-                        //alert("No Items returned !!!!")
-                        hidespin();
-                        jQuery.ajaxSetup({ async: true });
-                        Swal.fire({
-                          title: "Notice!",
-                          text: "No Items returned !!!!",
-                          icon: "success"
-                        });
-                        return false;
-                    }
-                      
-                    // var listNames = response.items;
-
-                    const container = document.getElementById('jsoneditor')
-
-                    var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); }; // OPTIONAL
-                    var cancelcallback = function () { }; // OPTIONAL
-                    var errorcallback = function (e) { alert(e); }; // OPTIO
-                    // hidespin();
-                    jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-                },
-                 error: function (jqXHR, exception) {
-                    var msg = '';
-                    if (jqXHR.status === 0) {
-                        msg = 'Not connect.\n Verify Network.';
-                    } else if (jqXHR.status == 404) {
-                        msg = 'Requested page not found. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msg = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msg = 'Requested JSON parse failed.';
-                    } else if (exception === 'timeout') {
-                        msg = 'Time out error.';
-                    } else if (exception === 'abort') {
-                        msg = 'Ajax request aborted.';
-                    } else {
-                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                    }
-                    alert(msg);
-                }
-            });
-            jQuery.ajaxSetup({ async: true });
-        }
-// #region
-
-// #region CONFIG
-        function Config() {
-
-            var ns = $('#namespacetext').val();
-            // alert(ns)
-            if (ns === null || ns === '') {
-                Swal.fire({
-                           title: "Notice!",
-                           text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
-                           icon: "success"
-                });
-               // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
-                return;
-            }
-            showspin();
-            jQuery.ajaxSetup({ async: true });
-            $.ajax({
-                type: "GET",
-                url: "/api/KubernetesWebApi/config", // '@Url.Action("/api/KubernetesWebApi/GetNodeList")',
-                data: { jsonInput: ns },
-                 
-                contentType: "application/json;charset=utf-8",
-                 
-                datatype: "json",
-                beforeSend: function () {
-                    showspin();
-                    //setTimeout(function () {
-                    //    console.log("Hello World");
-                    //}, 5000);
-
-                },
-                success: function (response) {
-                    hidespin();
-                    //debugger;
-                    var tt = response.items;
-                    if (tt.length == 0) {
-                        //alert("No Items returned !!!!")
-                        hidespin();
-                        jQuery.ajaxSetup({ async: true });
-                        Swal.fire({
-                          title: "Notice!",
-                          text: "No Items returned !!!!",
-                          icon: "success"
-                        });
-                        return false;
-                    }
- 
-                    const container = document.getElementById('jsoneditor')
-
-                    var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); };
-                    var cancelcallback = function () { }; // OPTIONAL
-                    var errorcallback = function (e) { alert(e); }; // OPTIO
- 
-                    jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
-                },
- 
-                error: function (jqXHR, exception) {
-                    var msg = '';
-                    if (jqXHR.status === 0) {
-                        msg = 'Not connect.\n Verify Network.';
-                    } else if (jqXHR.status == 404) {
-                        msg = 'Requested page not found. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msg = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msg = 'Requested JSON parse failed.';
-                    } else if (exception === 'timeout') {
-                        msg = 'Time out error.';
-                    } else if (exception === 'abort') {
-                        msg = 'Ajax request aborted.';
-                    } else {
-                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                    }
-                    alert(msg);
-                }
-            });
-            jQuery.ajaxSetup({ async: true });
-        }
-// #region
-
-// #region SERVICE
+        // #region SERVICE
         function Service() {
-
             var ns = $('#namespacetext').val();
-            
             if (ns === null || ns === '') {
                 //alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
                 Swal.fire({
-                           title: "Notice!",
-                           text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
-                           icon: "success"
+                    title: "Notice!",
+                    text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
+                    icon: "success"
                 });
                 return;
             }
@@ -1844,23 +2037,19 @@
                         hidespin();
                         jQuery.ajaxSetup({ async: true });
                         Swal.fire({
-                          title: "Notice!",
-                          text: "No Items returned !!!!",
-                          icon: "success"
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
                         });
                         return false;
                     }
                     // var listNames = response.items;
-
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
                     var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); };
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
-
                     jsonDialog1(response, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
-
                 },
                 error: function (jqXHR, exception) {
                     var msg = '';
@@ -1884,60 +2073,54 @@
             });
             jQuery.ajaxSetup({ async: true });
         }
-// #endregion
-// #region PODS
-      function Pods() {
-
-          var ns = $('#namespacetext').val();
-         // alert(ns)
-          if (ns === null || ns === '' ) { 
-              Swal.fire({
-                 title: "Notice!",
-                 text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
-                 icon: "success"
-              });
-            // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
-              return;
-          }
-          showspin();
+        // #endregion
+        // #region PODS
+        function Pods() {
+            var ns = $('#namespacetext').val();
+            // alert(ns)
+            if (ns === null || ns === '') {
+                Swal.fire({
+                    title: "Notice!",
+                    text: "Please click Get Namespaces and then choose a namespace from populated dropdown combo",
+                    icon: "success"
+                });
+                // alert("Please click Get Namespaces and then choose a namespace from populated dropdown combo")
+                return;
+            }
+            showspin();
             jQuery.ajaxSetup({ async: true });
             $.ajax({
                 type: "GET",
                 url: "/api/KubernetesWebApi/pods", // '@Url.Action("/api/KubernetesWebApi/GetNodeList")',
                 data: { jsonInput: ns },
-                     
+
                 contentType: "application/json;charset=utf-8",
-                
+
                 datatype: "json",
                 beforeSend: function () {
                     showspin();
                     //setTimeout(function () {
                     //    console.log("Hello World");
                     //}, 5000);
- 
                 },
                 success: function (response) {
                     hidespin();
-                    //alert(response);
-                    //debugger;
                     var tt = response.items;
                     if (tt.length == 0) {
                         //alert("No Items returned !!!!")
                         hidespin();
                         jQuery.ajaxSetup({ async: true });
                         Swal.fire({
-                          title: "Notice!",
-                          text: "No Items returned !!!!",
-                          icon: "success"
+                            title: "Notice!",
+                            text: "No Items returned !!!!",
+                            icon: "success"
                         });
                         return false;
                     }
-                   // var listNames = response.items;
-
+                    // var listNames = response.items;
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
-                    var okcallback = function (jsonobj) { alert(JSON.stringify(tt)); };
+                    var okcallback = function (jsonobj) { }; //alert(JSON.stringify(tt)); };
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     jsonDialog1(response, modes, 'Pods', okcallback, cancelcallback, errorcallback);
@@ -1963,18 +2146,16 @@
                 }
             });
             jQuery.ajaxSetup({ async: true });
-      }
-// endregion
+        }
+        // endregion
 
 
-// #region NAMESPACES
-    function Namespaces() {
+        // #region NAMESPACES
+        function Namespaces() {
             //  alert("nodes");
             //  debugger;
             //  showspin();
-
             showspin();
-
             jQuery.ajaxSetup({ async: true });
             $.ajax({
                 type: "GET",
@@ -1992,21 +2173,20 @@
                 },
                 success: function (response) {
                     hidespin();
+
                     var tt = response.items;
                     if (tt.length == 0) {
                         Swal.fire({
-                           title: "Notice!",
-                           text: "No Items returned !!!",
-                           icon: "success"
+                            title: "Notice!",
+                            text: "No Items returned !!!",
+                            icon: "success"
                         });
                         hidespin();
                         jQuery.ajaxSetup({ async: true });
                         return false;
                     }
                     var listNames = response.items;
-
                     const container = document.getElementById('jsoneditor')
-
                     var modes = { mode: 'tree', modes: ['form', 'text', 'tree'] }; // OPTIONAL
                     var okcallback = function (jsonobj) { //alert(JSON.stringify(tt)); }; // OPTIONAL
                         Swal.fire({
@@ -2018,7 +2198,7 @@
                     var cancelcallback = function () { }; // OPTIONAL
                     var errorcallback = function (e) { alert(e); }; // OPTIO
                     // hidespin();
- 
+
                     document.getElementById("bonus").options.length = 0;
                     //  const div = document.querySelector('#dropdownaction');
                     $.each(listNames, function (key, value) {
@@ -2027,10 +2207,7 @@
                     $('#namespacetext').val('default');
                     //jsonDialog(tt, modes, 'GetAllResources', okcallback, cancelcallback, errorcallback);
                 },
-                //error: function (response) {
-                //    alert("error Nodes ");
-                //    alert(response.responseText);
-                //}
+
                 error: function (jqXHR, exception) {
                     var msg = '';
                     if (jqXHR.status === 0) {
@@ -2053,214 +2230,205 @@
             });
             jQuery.ajaxSetup({ async: true });
         }
-// endregion
- 
+        // endregion
 
-// region jsonDialog
-            function jsonDialog(jsonobj, modes, titleDialog, okcallback, cancelcallback, errorcallback) {
-                if (jsonobj === undefined || jsonobj === null) {
-                    if (errorcallback !== undefined)
-                        errorcallback("JSON Object is not valid");
-                    return false;
-                }
-                //debugger;
-                var jsoncontent = document.createElement('div');
-                jsoncontent.id = 'divjson';
-                jsoncontent.style.display = "none";
 
-                $('#divjson').css('z-index', '100000');
-                document.body.appendChild(jsoncontent);
+        // region jsonDialog
+        function jsonDialog(jsonobj, modes, titleDialog, okcallback, cancelcallback, errorcallback) {
+            if (jsonobj === undefined || jsonobj === null) {
+                if (errorcallback !== undefined)
+                    errorcallback("JSON Object is not valid");
+                return false;
+            }
+            //debugger;
+            var jsoncontent = document.createElement('div');
+            jsoncontent.id = 'divjson';
+            jsoncontent.style.display = "none";
 
-                var jsoneditor = document.createElement('div');
-                jsoneditor.style.width = '598px';
-                jsoneditor.style.height = '484px';
+            $('#divjson').css('z-index', '100000');
+            document.body.appendChild(jsoncontent);
 
-                jsoncontent.appendChild(jsoneditor);
+            var jsoneditor = document.createElement('div');
+            jsoneditor.style.width = '598px';
+            jsoneditor.style.height = '484px';
+            jsoncontent.appendChild(jsoneditor);
+            if (modes === undefined || modes === null)
+                modes = { mode: 'tree', modes: ['form', 'text', 'tree', 'view'] };
+            var editor = new JSONEditor(jsoneditor, modes);
+            editor.set(jsonobj);
+            var destroy = function () {
+                editor.destroy();
+                jsoneditor.remove();
+                $(jsoncontent).dialog('close');
+                jsoncontent.remove();
+                $('.ui-dialog').remove();
+            };
+            //https://api.jqueryui.com/position/
+            //https://jqueryui.com/position/
+            $(jsoncontent).dialog({
+                height: 610, //560,
+                width: 600,
+                resizable: true,
+                modal: false,
+                //visibility: inherit,
+                // dialogClass: "alert101",
+                draggable: true,
+                closeOnEscape: false,
+                title: "Info",
+                position: {
+                    my: "center",
+                    at: "top",
+                    of: window
+                },
+                buttons: [{
+                    text: "Close",
+                    style: "margin-left:10px; color:#3883fa;",
+                    click: function () {
+                        var result = editor.get();
+                        destroy();
+                        if (okcallback !== undefined)
+                            okcallback(result);
+                        // hideBusyIndicator();
+                    }
+                }, {
+                    text: "More",
+                    style: "color:#EE422E;",
+                    click: function () {
+                        var ct = 0;
+                        var names = [];
+                        // debugger;
+                        jsonobj.items.forEach(function (item) {
+                            // do something with `item`
+                            //console.log(item.metadata.name);
+                            var str = ct + '.) ' + item.metadata.namespace + '/' +
+                                item.metadata.name + " ";
+                            str1 = str.substring(0, str.length - 1);
+                            names.push(str1);
+                            ct++;
+                        });
+                        //var newStr = names..replaceAll(",", "  ");
+                        Swal.fire({
+                            title: 'Namespace/Pod!',
+                            text: names, //'Do you want to continue',
+                            icon: 'Info',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                            /*
+                            {
+                                text: "Cancel",
+                                style: "margin-right:40px; color:#5853fc;",
+                                click: function () {
+                                    destroy();
+                                    if (cancelcallback !== undefined)
+                                        cancelcallback();
+                                    // hideBusyIndicator();
+                                }
+                            }  */   ]
+            }).append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
+            $(".ui-dialog-titlebar-close").css('visibility', 'hidden');
+            $("ui-dialog-titlebar").css('background', 'color: blue');
+            $(".ui-dialog").css('border-style', 'none');
+            $(".ui-dialog").css('z-index', '505');
+            $(".ui-dialog-titlebar").css('visibility', 'hidden');
+            $(".ui-dialog-titlebar").css('background', 'color: red');
+            $(".ui-dialog").css('modal', 'true');
+            $(".ui-dialog").css('text-align', 'center');
+            $(".ui-button").css('width', '100px');
+            $(".ui-button").css('margin-top', '10px');
+            $(".ui-button").css('margin-bottom', '10px');
+            return true;
 
-                if (modes === undefined || modes === null)
-                    modes = { mode: 'tree', modes: ['form', 'text', 'tree', 'view'] };
+        }
+        // endregion
 
-                var editor = new JSONEditor(jsoneditor, modes);
-                editor.set(jsonobj);
-
-                var destroy = function () {
-                    editor.destroy();
-                    jsoneditor.remove();
-                    $(jsoncontent).dialog('close');
-                    jsoncontent.remove();
-                    $('.ui-dialog').remove();
-                };
-                //https://api.jqueryui.com/position/
-                //https://jqueryui.com/position/
-                $(jsoncontent).dialog({
-                    height: 610, //560,
-                    width: 600,
-                    resizable: true,
-                    modal: false,
-                    //visibility: inherit,
-                    // dialogClass: "alert101",
-                    draggable: true,
-                    closeOnEscape: false,
-
-                    title: "Info",
-                    position: {
-                        my: "center",
-                        at: "top",
-                        of: window
-                    },
-                    buttons: [{
-                         
-                        text: "Close",
-                        style: "margin-left:40px; color:#3883fa;",
-                        click: function () {
-                            var result = editor.get();
-                            destroy();
-                            if (okcallback !== undefined)
-                                okcallback(result);
-                            // hideBusyIndicator();
-                        } 
-                    }, {
-                        text: "GetJSON",
-                        style: "color:#EE422E;",
-                        click: function () {
-                            var ct = 0;
-                            var names = [];
-                           // debugger;
-                            jsonobj.items.forEach(function(item) {
-                                // do something with `item`
-                                //console.log(item.metadata.name);
-                                var str = ct + '.) ' + item.metadata.namespace + '/' +
-                                    item.metadata.name + " ";
-                                //str1 = str.slice(0, -1);
-                                names.push(str);
-                                ct++;
-                            });
-                            Swal.fire({
-                                title: 'Pod Names!',
-                                text: names, //'Do you want to continue',
-                                icon: 'Help',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    }, 
+        //  region jsonDialog1
+        function jsonDialog1(jsonobj, modes, titleDialog, okcallback, cancelcallback, errorcallback) {
+            if (jsonobj === undefined || jsonobj === null) {
+                if (errorcallback !== undefined)
+                    errorcallback("JSON Object is not valid");
+                return false;
+            }
+            //debugger;
+            var jsoncontent = document.createElement('div');
+            jsoncontent.id = 'divjson';
+            jsoncontent.style.display = "none";
+            $('#divjson').css('z-index', '100000');
+            document.body.appendChild(jsoncontent);
+            var jsoneditor = document.createElement('div');
+            jsoneditor.style.width = '598px';
+            jsoneditor.style.height = '484px';
+            jsoncontent.appendChild(jsoneditor);
+            if (modes === undefined || modes === null)
+                modes = { mode: 'tree', modes: ['form', 'text', 'tree', 'view'] };
+            var editor = new JSONEditor(jsoneditor, modes);
+            editor.set(jsonobj);
+            var destroy = function () {
+                editor.destroy();
+                jsoneditor.remove();
+                $(jsoncontent).dialog('close');
+                jsoncontent.remove();
+                $('.ui-dialog').remove();
+            };
+            //https://api.jqueryui.com/position/
+            //https://jqueryui.com/position/
+            $(jsoncontent).dialog({
+                height: 610, //560,
+                width: 600,
+                resizable: true,
+                modal: false,
+                //visibility: inherit,
+                // dialogClass: "alert101",
+                draggable: true,
+                closeOnEscape: false,
+                title: "Info",
+                position: {
+                    my: "center",
+                    at: "top",
+                    of: window
+                },
+                buttons: [
                     /*
+                {
+                    text: "OK",
+                    style: "margin-left:40px; color:#3883fa;",
+                    click: function () {
+                        var result = editor.get();
+                        destroy();
+                        if (okcallback !== undefined)
+                            okcallback(result);
+                        // hideBusyIndicator();
+                    }
+                },*/
                     {
                         text: "Cancel",
-                        style: "margin-right:40px; color:#5853fc;",
+                        style: "margin-right:10px; color:#5853fc;",
                         click: function () {
                             destroy();
                             if (cancelcallback !== undefined)
                                 cancelcallback();
                             // hideBusyIndicator();
                         }
-                    }  */   ]
-                }).append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
-                $(".ui-dialog-titlebar-close").css('visibility', 'hidden');
-                $("ui-dialog-titlebar").css('background', 'color: blue');
-                $(".ui-dialog").css('border-style', 'none');
-                $(".ui-dialog").css('z-index', '505');
-                $(".ui-dialog-titlebar").css('visibility', 'hidden');
-                $(".ui-dialog-titlebar").css('background', 'color: red');
-                $(".ui-dialog").css('modal', 'true');
-                $(".ui-dialog").css('text-align', 'center');
-                $(".ui-button").css('width', '100px');
-                $(".ui-button").css('margin-top', '10px');
-                $(".ui-button").css('margin-bottom', '10px');
-                return true;
+                    }]
+            }).append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
+            $(".ui-dialog-titlebar-close").css('visibility', 'hidden');
+            $("ui-dialog-titlebar").css('background', 'color: blue');
+            $(".ui-dialog").css('border-style', 'none');
+            $(".ui-dialog").css('z-index', '505');
+            $(".ui-dialog-titlebar").css('visibility', 'hidden');
+            $(".ui-dialog-titlebar").css('background', 'color: red');
+            $(".ui-dialog").css('modal', 'true');
+            $(".ui-dialog").css('text-align', 'center');
+            $(".ui-button").css('width', '100px');
+            $(".ui-button").css('margin-top', '10px');
+            $(".ui-button").css('margin-bottom', '10px');
+            return true;
 
-            }
-// endregion    
-
-//  region jsonDialog1
-           function jsonDialog1(jsonobj, modes, titleDialog, okcallback, cancelcallback, errorcallback) {
-                if (jsonobj === undefined || jsonobj === null) {
-                    if (errorcallback !== undefined)
-                        errorcallback("JSON Object is not valid");
-                    return false;
-                }
-                //debugger;
-                var jsoncontent = document.createElement('div');
-                jsoncontent.id = 'divjson';
-                jsoncontent.style.display = "none";
-
-                $('#divjson').css('z-index', '100000');
-                document.body.appendChild(jsoncontent);
-
-                var jsoneditor = document.createElement('div');
-                jsoneditor.style.width = '598px';
-                jsoneditor.style.height = '484px';
-
-                jsoncontent.appendChild(jsoneditor);
-
-                if (modes === undefined || modes === null)
-                    modes = { mode: 'tree', modes: ['form', 'text', 'tree', 'view'] };
-
-                var editor = new JSONEditor(jsoneditor, modes);
-                editor.set(jsonobj);
-
-                var destroy = function () {
-                    editor.destroy();
-                    jsoneditor.remove();
-                    $(jsoncontent).dialog('close');
-                    jsoncontent.remove();
-                    $('.ui-dialog').remove();
-                };
-                //https://api.jqueryui.com/position/
-                //https://jqueryui.com/position/
-                $(jsoncontent).dialog({
-                    height: 610, //560,
-                    width: 600,
-                    resizable: true,
-                    modal: false,
-                    //visibility: inherit,
-                    // dialogClass: "alert101",
-                    draggable: true,
-                    closeOnEscape: false,
-
-                    title: "Info",
-                    position: {
-                        my: "center",
-                        at: "top",
-                        of: window
-                    },
-                    buttons: [{
-                        text: "OK",
-                        style: "margin-left:40px; color:#3883fa;",
-                        click: function () {
-                            var result = editor.get();
-                            destroy();
-                            if (okcallback !== undefined)
-                                okcallback(result);
-                            // hideBusyIndicator();
-                        }
-                    },{
-                            text: "Cancel",
-                            style: "margin-right:40px; color:#5853fc;",
-                            click: function () {
-                                destroy();
-                                if (cancelcallback !== undefined)
-                                    cancelcallback();
-                                // hideBusyIndicator();
-                            }
-                        }]
-                }).append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
-                $(".ui-dialog-titlebar-close").css('visibility', 'hidden');
-                $("ui-dialog-titlebar").css('background', 'color: blue');
-                $(".ui-dialog").css('border-style', 'none');
-                $(".ui-dialog").css('z-index', '505');
-                $(".ui-dialog-titlebar").css('visibility', 'hidden');
-                $(".ui-dialog-titlebar").css('background', 'color: red');
-                $(".ui-dialog").css('modal', 'true');
-                $(".ui-dialog").css('text-align', 'center');
-                $(".ui-button").css('width', '100px');
-                $(".ui-button").css('margin-top', '10px');
-                $(".ui-button").css('margin-bottom', '10px');
-                return true;
-
-            }
-// endregion 
+        }
+        // endregion
 
 
-  </script>
+    </script>
 
 }

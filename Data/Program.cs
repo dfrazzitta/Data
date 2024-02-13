@@ -10,11 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
- 
 
 builder.Services.AddHttpLogging(logging =>
 {
-
     logging.RequestHeaders.Add("Cache-Control");
     logging.ResponseHeaders.Add("Server");
     logging.LoggingFields = HttpLoggingFields.All;
@@ -23,7 +21,6 @@ builder.Services.AddHttpLogging(logging =>
     logging.MediaTypeOptions.AddText("application/javascript");
     logging.RequestBodyLogLimit = 4096;
     logging.ResponseBodyLogLimit = 4096;
-
 });
 
 builder.Services.AddMiniProfiler(options =>
@@ -31,7 +28,6 @@ builder.Services.AddMiniProfiler(options =>
     options.RouteBasePath = "/profiler";
     options.ColorScheme = StackExchange.Profiling.ColorScheme.Light;
     options.PopupRenderPosition = StackExchange.Profiling.RenderPosition.BottomLeft;
-
 }).AddEntityFramework();
 
 
@@ -50,27 +46,24 @@ builder.Services.AddControllersWithViews()
         o.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-
-
 builder.Services.AddDbContext<SchoolContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection1")));
-
-
 builder.Services.AddMetrics();
-
- 
-
 var app = builder.Build();
 
 CreateDbIfNotExists(app);
 app.UseHttpLogging();
 
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var ctx = services.GetRequiredService<ApplicationDbContext>();
-    ctx.Database.Migrate();
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    bool b = context.Database.EnsureCreated();
+    if (!b)
+    {
+       // context.Database.Migrate();
+       //DbInitializer.Initialize(context);
+    }
 }
 
 app.UseMiniProfiler();
@@ -84,11 +77,12 @@ else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    //app.UseHsts();
+    app.UseHsts();
 }
- 
-//app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+app.UseHttpsRedirection();
+//app.UseStaticFiles();
 
 app.UseRouting();
 
@@ -119,11 +113,15 @@ static void CreateDbIfNotExists(IHost host)
 
         SchoolContext context = services.GetRequiredService<SchoolContext>();
         logger.LogError("After CreateDbIfNotExists");
-        context.Database.Migrate();
+         
         bool b = context.Database.EnsureCreated();
         logger.LogError("be4 initializer CreateDbIfNotExists");
-        if (!b)
+        if (b)
+        {
+            //context.Database.Migrate();
             DbInitializer.Initialize(context);
+        }
+            
         logger.LogError("after initializer CreateDbIfNotExists");
     }
     catch (Exception ex)

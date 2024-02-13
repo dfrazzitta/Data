@@ -29,7 +29,7 @@ body {
 .centered {
     display: table-cell;
     height: 50px;
-    width: 800px;
+    width: auto;
     background: blue;
     text-align: center;
     vertical-align: middle;

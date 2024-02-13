@@ -12,7 +12,7 @@ namespace Demo.Controllers
     {
         private readonly ILogger<MongoController> _logger;
         private IConfiguration _configuration;
-        protected MongoClient Client { get; set; }
+        public MongoClient Client { get; set; }
 
         public MongoController(ILogger<MongoController> logger, IConfiguration configuration)
         {
@@ -25,7 +25,7 @@ namespace Demo.Controllers
         {
             // var Client = new MongoClient(_configuration.GetValue<string>("MongoConnection"));
             _logger.Log(LogLevel.Information, "be4 the client");
-            Client = new MongoClient("mongodb://mongodb-replica-0.mongo:27017,mongodb://mongodb-replica-1.mongo:27017/?replicaSet=rs0");
+            Client = new MongoClient("root:example@db:27017");
             _logger.Log(LogLevel.Information, "after the client");
             _logger.Log(LogLevel.Information, Client.Settings.ReplicaSetName);
             var rs = Client.Settings.ReplicaSetName;
@@ -36,7 +36,7 @@ namespace Demo.Controllers
             while (databases.MoveNext())
             {
                 var currentBatch = databases.Current;
-                 
+
                 foreach (BsonDocument s in currentBatch)
                     sb.Append(s.ToString() + "   ");
 
@@ -56,10 +56,53 @@ namespace Demo.Controllers
             }
             */
 
-
-
             return View();
         }
+
+        public void Connect()
+        {
+
+            var server = new MongoServerAddress(host: "172.16.0.14", port: 27017);
+            //var server = new MongoServerAddress(host: "localhost", port: 27014);
+            var credentials = MongoCredential.CreateCredential(
+                databaseName: "admin",
+                username: "test",
+                password: "test"
+            );
+            var mongodbClientSettings = new MongoClientSettings
+            {
+                Credential = credentials,
+                Server = server,
+                //ConnectionMode = ConnectionMode.Standalone,
+                ServerSelectionTimeout = TimeSpan.FromSeconds(3)
+            };
+
+            Client = new MongoClient("mongodb://mongodb:27017"); // mongodbClientSettings);
+
+            var database = Client.GetDatabase("EventSampleApiDB");
+            // Client.DropDatabase(database);
+
+            var databases = Client.ListDatabases();
+            while (databases.MoveNext())
+            {
+                _logger.Log(LogLevel.Information, databases.Current.ToString());
+                var currentBatch = databases.Current;
+
+            }
+            // var collection = database.GetCollection<T>(typeof(T).Name);
+            /*
+            _logger.Log(LogLevel.Information, "be4 the client");
+            Client = new MongoClient("mongodb://localhost:27017");
+            _logger.Log(LogLevel.Information, "after the client");
+            _logger.Log(LogLevel.Information, Client.Settings.ReplicaSetName);
+            var rs = Client.Settings.ReplicaSetName;
+            */
+
+            //  ViewData["goodcall"] = sb.ToString(); //.AddressList[0];
+            // ViewData["rsname"] = rs;
+        }
+
+
 
         // GET: MongoController/Details/5
         public ActionResult Details(int id)

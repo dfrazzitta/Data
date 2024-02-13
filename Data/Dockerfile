@@ -3,7 +3,20 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 12987
+#EXPOSE 443
+
+COPY config /app
+
+USER root
+RUN apt update
+RUN apt update && \
+    apt install  -y \
+        nano \
+        wget && \
+    rm -rf /var/lib/apt/lists/*
+
+
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release

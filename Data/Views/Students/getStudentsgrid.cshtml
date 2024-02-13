@@ -47,10 +47,14 @@
 <script>
 
     function EditCustomer(rowid) {
-        alert(rowid);
+
+       // debugger;
+        alert('todo');
+        alert(rowid.Id);
     }
 
     function DeleteCustomer(rowid) {
+        debugger;
         alert(rowid);
     }
 
@@ -156,9 +160,11 @@
                 { "data": "DateOfBirth", "name": "Date Of Birth", "autoWidth": true },
                 
                 {
-                    "data": "ID", "render": function (data, type, row, meta) {
+                    "data": "id", "render": function (data, type, row, meta) {
                       //  return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
-                        return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='btn btn-danger btn-sm' onclick='EditCustomer()'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:50px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
+                        //return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> 
+                        return  "<button class='btn btn-danger btn-sm' onclick='EditCustomer("+JSON.stringify(row)+")'> Edit </button>" +
+        "<button class='btn btn-danger btn-sm' onclick='EditCustomer("+JSON.stringify(row)+")'> Delete </button>";
 
                     },
                     "orderable": true,
