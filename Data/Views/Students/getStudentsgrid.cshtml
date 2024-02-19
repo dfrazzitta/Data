@@ -12,16 +12,36 @@
 <link href="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.css" rel="stylesheet">
 *@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" asp-append-version="true" />
-
+ 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.jqueryui.min.css" asp-append-version="true" />
 
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+        integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+        crossorigin="anonymous"></script>
+ 
 
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
 @*
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.js"></script>
 *@
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-editor/2.2.2/dataTables.editor.js"></script>
+ 
+<link href="~/css/site.css" rel="stylesheet" />
+
+@*
+<a id="myButtonNodesConfig" onclick="EditCust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Add Customer</a>
+<a id="myButtonNodesConfig" onclick="Delete Cust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Delete Customer</a>
+<a id="myButtonNodesConfig" onclick="Edit Cust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Edit Customer</a>
+   *@
+
 
 <div class="container">
     <br />
@@ -45,21 +65,229 @@
  
 
 <script>
+    function jsonDialog1(jsonobj, modes, titleDialog, okcallback, cancelcallback, errorcallback) {
+        if (jsonobj === undefined || jsonobj === null) {
+            if (errorcallback !== undefined)
+                errorcallback("JSON Object is not valid");
+            return false;
+        }
+        //debugger;
+        var jsoncontent = document.createElement('div');
+        jsoncontent.id = 'divjson';
+        jsoncontent.style.display = "none";
+        $('#divjson').css('z-index', '1');
+        document.body.appendChild(jsoncontent);
+ 
+        if (modes === undefined || modes === null)
+            modes = { mode: 'tree', modes: ['form', 'text', 'tree', 'view'] };
+ 
+        var destroy = function () {
+           // editor.destroy();
+          //  jsoneditor.remove();
+            $(jsoncontent).dialog('close');
+            jsoncontent.remove();
+            $('.ui-dialog').remove();
+        };
+        //https://api.jqueryui.com/position/
+        //https://jqueryui.com/position/
+        $(jsoncontent).dialog({
+            height: 210, //560,
+            width: 200,
+            resizable: false,
+            modal: true,
+            //visibility: inherit,
+            // dialogClass: "alert101",
+            draggable: false,
+            closeOnEscape: false,
+            title: "Info",
+            position: {
+                my: "center",
+                at: "top",
+                of: window
+            },
+            buttons: [
+                 
+            {
+                text: "OK",
+                style: "margin-left:40px; color:#3883fa;",
+                click: function () {
+                    var result = editor.get();
+                    destroy();
+                    if (okcallback !== undefined)
+                        okcallback(result);
+                    // hideBusyIndicator();
+                }
+            }, 
+                {
+                    text: "Cancel",
+                    style: "margin-right:10px; color:#5853fc;",
+                    click: function () {
+                        destroy();
+                        if (cancelcallback !== undefined)
+                            cancelcallback();
+                        // hideBusyIndicator();
+                    }
+                }]
+        });//.append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
+        $(".ui-dialog-titlebar-close").css('visibility', 'visible');
+        $(".ui-dialog-titlebar").css('background', 'color: blue');
+        $(".ui-dialog").css('border-style', 'solid');
+        $(".ui-dialog").css('background-color', 'grey');
+        $(".ui-dialog").css('z-index', '505');
+        $(".ui-dialog-titlebar").css('visibility', 'visible');
+        $(".ui-dialog-titlebar").css('background', 'color: red');
+        $(".ui-dialog").css('modal', 'true');
+        $(".ui-dialog").css('text-align', 'center');
+        $(".ui-button").css('width', '100px');
+        $(".ui-button").css('margin-top', '10px');
+        $(".ui-button").css('margin-bottom', '10px');
+        return true;
 
-    function EditCustomer(rowid) {
-
-       // debugger;
-        alert('todo');
-        alert(rowid.Id);
+    }
+    // endregion
+        
+    function reloadgrid() { 
+        debugger;
+        $("#customerDatatable").DataTable().clear();
+        $("#customerDatatable").DataTable().ajax().reload();
     }
 
+    function generateTable() {
+        // creates a <table> element and a <tbody> element
+        const tbl = document.createElement("table");
+        const tblBody = document.createElement("tbody");
+
+        // creating all cells
+        for (let i = 0; i < 2; i++) {
+            // creates a table row
+            const row = document.createElement("tr");
+
+            for (let j = 0; j < 2; j++) {
+                // Create a <td> element and a text node, make the text
+                // node the contents of the <td>, and put the <td> at
+                // the end of the table row
+                const cell = document.createElement("td");
+                const cellText = document.createTextNode(`cell in row ${i}, column ${j}`);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            // add the row to the end of the table body
+            tblBody.appendChild(row);
+        }
+
+        // put the <tbody> in the <table>
+        tbl.appendChild(tblBody);
+        // appends <table> into <body>
+        document.body.appendChild(tbl);
+        // sets the border attribute of tbl to '2'
+        tbl.setAttribute("border", "2");
+    }
+
+
+
+
+    function EditCustomer(row) {
+       // debugger;
+         
+       // var st = JSON.stringify(row);
+
+       /*
+        $.getJSON("students/getStudents", function (data) {
+            var items = [];
+            alert('got students');
+            
+            $.each(data, function (key, val) {
+                items.push("<li id='" + key + "'>" + val + "</li>");
+            });
+            alert(items);
+
+            $("<ul/>", {
+                "class": "my-new-list",
+                html: items.join("")
+            }).appendTo("body");
+        });  */
+       //   alert(st);
+       // var df = JSON.parse(row)
+
+       // alert(row.FirstName);
+       // alert(row.Id);
+ 
+        // reloadgrid();
+
+        
+          
+         
+        $('<div></div>').dialog({
+            modal: true,
+            height: 510, //560,
+            width: 500,
+            resizable: false,
+            modal: true,
+            //visibility: inherit,
+            // dialogClass: "alert101",
+            draggable: true,
+            closeOnEscape: false,
+            title: "Info",
+            position: {
+                my: "center",
+                at: "top",
+                of: window
+            },
+            buttons: {
+                'OK': function () {
+                    var name = $('input[name="name"]').val();
+                    storeData(name);
+                    $(this).dialog('close');
+                },
+                'Cancel': function () {
+                    $(this).dialog('close');
+                }
+            }
+        }); //.append('<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqBq0ilAid0OE2A0Qx94ujF_M9DugbAGVyg&usqp=CAU" width = "100" height = "60"/>  ');
+    $(".ui-dialog-titlebar-close").css('visibility', 'visible');
+    $("ui-dialog-titlebar").css('background-color', 'color: blue');
+    $(".ui-dialog").css('border-style', 'solid ');
+    $(".ui-dialog").css('background-color', 'grey ');
+    $(".ui-dialog").css('z-index', '10000');
+    $(".ui-dialog-titlebar").css('visibility', 'visible');
+    $(".ui-dialog-titlebar").css('background', 'color: red');
+    $(".ui-dialog").css('modal', 'true');
+    $(".ui-dialog").css('text-align', 'center');
+    $(".ui-button").css('width', '100px');
+    $(".ui-button").css('margin-top', '10px');
+    $(".ui-button").css('margin-bottom', '10px');;
+       // var jj = JSON.stringify(rowid);
+       // var d = '{"id":"1","name":"john","age":26}';
+       // var json = $.parseJSON(d);
+       // $("<div/>", { text: json.name + " " + json.age }).appendTo("body");
+       // $("div").dialog();
+      //  alert(jj);
+    }
+     
+  
+
     function DeleteCustomer(rowid) {
-        debugger;
+      //  debugger;
         alert(rowid);
     }
 
-    function PopupForm(url) {
-        var formDiv = $('<div/>');
+    function PopupForm() {
+        var formDiv = $('<div></div>');
+        formDiv.html('http://www.microsoft.com');
+
+        Popup = formDiv.dialog({
+            autoOpen: true,
+            resizable: false,
+            title: 'Fill Employee Details',
+            height: 500,
+            width: 700,
+            close: function () {
+                Popup.dialog('destroy').remove();
+            }
+
+        });
+        /*
         $.get(url)
             .done(function (response) {
                 formDiv.html(response);
@@ -76,6 +304,8 @@
 
                 });
             });
+            */
+     
     }
 
     function SubmitForm(form) {
@@ -103,7 +333,7 @@
     }
 
     function Delete(id) {
-        debugger;
+       // debugger;
         if (confirm('Are You Sure to Delete this Employee Record ?')) {
             $.ajax({
                 type: "POST",
@@ -125,7 +355,8 @@
     }
 
     $(document).ready(function () {
-        $("#customerDatatable").DataTable({
+
+        let table = $("#customerDatatable").DataTable({
             
             "info": true,
             "ordering": true,
@@ -143,6 +374,7 @@
                 "datatype": "json",
                 "dataSrc": "data"
             },
+
             search: {
                 return: true
             },
@@ -163,29 +395,30 @@
                     "data": "id", "render": function (data, type, row, meta) {
                       //  return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
                         //return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> 
-                        return  "<button class='btn btn-danger btn-sm' onclick='EditCustomer("+JSON.stringify(row)+")'> Edit </button>" +
-        "<button class='btn btn-danger btn-sm' onclick='EditCustomer("+JSON.stringify(row)+")'> Delete </button>";
-
+                        return "<button class='btn btn-danger btn-sm' style='margin-right:1px' onclick='EditCustomer(" + JSON.stringify(row) + ")'>Edit  </button>" +
+                               "<button class='btn btn-danger btn-sm' style='margin-right:6px' onclick='EditCustomer(" + JSON.stringify(row) + ")'>Add   </button>" +
+                              "<button class='btn btn-danger btn-sm' style='margin-right:6px'  onclick='EditCustomer(" + JSON.stringify(row) + ")'>Delete</button>" +
+                            "<button class='btn btn-danger btn-sm' style='margin-right:6px'  onclick='PopupForm()'>pop</button>";;
+                        //PopupForm(url)
                     },
                     "orderable": true,
                     "searchable": true,
                     "width": "150px"
-                }   
-                /*
-                {
-                    "render": function (data, type, row, meta) { 
-                       
-                       //
-                       //  return "<a href='#' class='btn btn-danger' onclick=DeleteCustomer('" + row.id + "'); >Delete</a>"; }
-                        return "<button class='btn btn-danger' onclick=EditCustomer('" + row.id + "'); >Edit</button>" +
-                            "<button class='btn btn-danger' onclick=DeleteCustomer('" + row.id + "'); >Delete</button>"
-                            ;
-                    }
-                }   */
+                }
             ]
         });
 
+   
 
+        table.on('click', 'tbody tr', function () {
+            //debugger;
+ 
+            let data = table.row(this).data();
+          //  debugger;
+            alert('You clicked on ' + data.FirstName + "'s row");
+           // var op = $(this).attr('href')
+            alert(data);
+        });
  
 
         $('#column3_search').on('keyup', function () {

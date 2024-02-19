@@ -1,0 +1,290 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+@model IEnumerable<Demo.SchoolModels.Customer>
+    *@
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Customer Data</h1>
+
+
+@*
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.css" rel="stylesheet">
+*@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" asp-append-version="true" />
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.jqueryui.min.css" asp-append-version="true" />
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+        integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+        crossorigin="anonymous"></script>
+
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
+@*
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/b-2.4.2/datatables.min.js"></script>
+*@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-editor/2.2.2/dataTables.editor.js"></script>
+
+<link href="~/css/site.css" rel="stylesheet" />
+
+@*
+<a id="myButtonNodesConfig" onclick="EditCust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Add Customer</a>
+<a id="myButtonNodesConfig" onclick="Delete Cust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Delete Customer</a>
+<a id="myButtonNodesConfig" onclick="Edit Cust()" class="btn btn-primary" data-bs-toggle="tooltip"
+   data-bs-placement="bottom" title="Get Config by NS">Edit Customer</a>
+   *@
+
+
+<div class="container">
+    <br />
+    <div style="width:90%; margin:0 auto;">
+        <table id="customerDatatable" class="display table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Date Of Birth</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+
+<script>
+
+
+    function reloadgrid() {
+       // debugger;
+        $("#customerDatatable").DataTable().clear();
+        $("#customerDatatable").DataTable().ajax().reload();
+    }
+
+    function generateTable() {
+        // creates a <table> element and a <tbody> element
+        const tbl = document.createElement("table");
+        const tblBody = document.createElement("tbody");
+
+        // creating all cells
+        for (let i = 0; i < 2; i++) {
+            // creates a table row
+            const row = document.createElement("tr");
+
+            for (let j = 0; j < 2; j++) {
+                // Create a <td> element and a text node, make the text
+                // node the contents of the <td>, and put the <td> at
+                // the end of the table row
+                const cell = document.createElement("td");
+                const cellText = document.createTextNode(`cell in row ${i}, column ${j}`);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            // add the row to the end of the table body
+            tblBody.appendChild(row);
+        }
+
+        // put the <tbody> in the <table>
+        tbl.appendChild(tblBody);
+        // appends <table> into <body>
+        document.body.appendChild(tbl);
+        // sets the border attribute of tbl to '2'
+        tbl.setAttribute("border", "2");
+    }
+
+
+
+
+    function EditCustomer(row) {
+        //debugger;
+        GetCust(1);
+     //   alert("edit cust");
+    }
+
+
+
+    function GetCust(var id)
+    {
+       // debugger;
+        var PostBackURL = '/customers/Details';
+        id = User.Id;
+        var options = { "backdrop": "static", keyboard: true };
+        $.ajax({
+            type: "GET",
+            url: PostBackURL,
+            contentType: "application/json; charset=utf-8",
+            data: { "Id": id },
+            datatype: "json",
+            success: function (data) {
+               // debugger;
+                $('#myModalContent').html(data);
+                $('#myModal').modal(options);
+                $('#myModal').modal('show');
+
+            },
+            error: function () {
+                alert("Dynamic content load failed.");
+            }
+        });
+    }
+
+    function DeleteCustomer(rowid) {
+
+       // alert(rowid);
+    }
+
+    $(document).ready(function () {
+
+        let table = $("#customerDatatable").DataTable({
+
+            "info": true,
+            "ordering": true,
+            "paging": true,
+            "scrollCollapse": true,
+            // "scrollY": '200px',
+            // "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "searching": true,
+            "ajax": {
+                "url": "/customers/GetCustGrid",
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": "data"
+            },
+
+            search: {
+                return: true
+            },
+            "columnDefs": [{
+                // "targets": [0],
+                "visible": true,
+                "searchable": true
+            }],
+            "columns": [
+                { "data": "Id", "name": "Id", "autoWidth": true },
+                { "data": "FirstName", "name": "First Name", "autoWidth": true },
+                { "data": "LastName", "name": "Last Name", "autoWidth": true },
+                { "data": "Contact", "name": "Country", "autoWidth": true },
+                { "data": "Email", "name": "Email", "autoWidth": true },
+                { "data": "DateOfBirth", "name": "Date Of Birth", "autoWidth": true },
+
+                {
+                    "data": "id", "render": function (data, type, row, meta) {
+                        //  return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')> <i class='fa fa-pencil'></i> Edit</a><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i> Delete</a>";
+                        //return "<a class='btn btn-default btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Employee")/" + data + "')>
+                        return "<button class='btn btn-danger btn-sm' style='margin-right:1px' onclick='EditCustomer(" + JSON.stringify(row) + ")'>Edit  </button>" +
+                            "<button class='btn btn-danger btn-sm' style='margin-right:6px' onclick='EditCustomer(" + JSON.stringify(row) + ")'>Add   </button>" +
+                            "<button class='btn btn-danger btn-sm' style='margin-right:6px'  onclick='EditCustomer(" + JSON.stringify(row) + ")'>Delete</button>" +
+                            "<button class='btn btn-danger btn-sm' style='margin-right:6px'  onclick='PopupForm()'>pop</button>";;
+                        //PopupForm(url)
+                    },
+                    "orderable": true,
+                    "searchable": true,
+                    "width": "150px"
+                }
+            ]
+        });
+
+        table.on('click', 'tbody tr', function () {
+            debugger;
+
+            let data = table.row(this).data();
+            //  debugger;
+           // alert('You clicked on ' + data.FirstName + "'s row");
+            // var op = $(this).attr('href')
+           // alert(data);
+        });
+
+
+        $('#column3_search').on('keyup', function () {
+            table
+                .columns(3)
+                .search(this.value)
+                .draw();
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+@*
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contact)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfBirth)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contact)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfBirth)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+*@

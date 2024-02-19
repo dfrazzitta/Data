@@ -24,6 +24,19 @@ namespace Demo.Controllers
         }
 
         [HttpGet("[action]")]
+        public string GetCustomers11()
+        {
+            var students = from s in _context.Customers
+                           select s;
+            string jsonString = JsonConvert.SerializeObject(students as IEnumerable<Student>);
+            return jsonString;
+
+        }
+
+
+
+
+        [HttpGet("[action]")]
         public string getStudents1()
         {
             var students = from s in _context.Students

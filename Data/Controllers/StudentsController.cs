@@ -26,6 +26,14 @@ namespace Demo.Controllers
             _context = context;
         }
 
+
+
+        [HttpPost]
+        public void DeleteCustomers1([FromForm] Customer cust)
+        {
+            return;
+        }
+
         [HttpPost]
         public IActionResult GetCustomers1()
         {
@@ -66,7 +74,7 @@ namespace Demo.Controllers
             }
         }
 
-        [HttpGet]
+         [HttpGet]
         public string getStudents1()
         {
             var students = from s in _context.Students
@@ -90,12 +98,13 @@ namespace Demo.Controllers
         }
 
         [HttpGet]
-        public IActionResult  getStudents()
+        public string  getStudents()
         {
             var students = from s in _context.Students
                            select s;
-          //  string jsonString = JsonConvert.SerializeObject(students);
-            return View(students); // jsonString); // students);
+            string jsonString = JsonConvert.SerializeObject(students);
+            //  return View(students); // jsonString); // students);
+            return jsonString;
         }
 
 

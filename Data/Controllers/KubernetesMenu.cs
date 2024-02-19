@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-//docker rm -f $(docker ps -a -q)
-
-
 
 namespace Demo.Controllers
 {
